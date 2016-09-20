@@ -9,6 +9,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <unordered_map>
+#include <vector>
+
 
 using namespace std;
 
@@ -43,19 +46,19 @@ Image::AllocateSpaceAndSetSize(size_t num_rows, size_t num_columns) {
 void Image:: ConvertToBinary(int threshold) {
 	for (int i = 0; i < num_rows_; ++i) {
 		for (int j = 0; j < num_columns_; ++j) {
-			if (GetPixel(i, j) > threshold)
-      {
+			if (GetPixel(i, j) >= threshold) {
 				SetPixel(i, j, 255);
         std::cout << GetPixel(i,j)<<endl;
       }
-			else
-      {
+			else {
 				SetPixel(i, j, 0);
         cout << GetPixel(i,j)<<endl;
       }
 		}
 	}
 }
+
+
 void
 Image::DeallocateSpace() {
   for (size_t i = 0; i < num_rows_; i++)
@@ -299,6 +302,78 @@ DrawLine(int x0, int y0, int x1, int y1, int color,
   }
 }
 
+void LabelImage( Image &an_image) {
+
+
+  int current_label = 0;
+  const int num_rows = an_image.num_rows();
+  const int num_columns = an_image.num_columns();
+  const int colors = an_image.num_gray_levels();
+  vector<vector<int>> objectOfPixel(num_rows,vector<int>(num_columns,0));
+  unordered_map<int, int> labels;
+
+
+  for (int i = 0; i < num_rows; ++i) {
+    for (int j = 0; j < num_columns; ++j) {
+        if(an_image.GetPixel(i,j)==255) {
+
+          //check north west neighbor
+          if(j!=0 && i!=0 && objectOfPixel[i-1][j-1]!=0)
+          {
+            //cout <<"Northwest\n";
+              objectOfPixel[i][j]=objectOfPixel[i-1][j-1]; 
+          }
+          //check west neighbor
+          else if(j!=0 && objectOfPixel[i][j-1]!=0)
+          {
+              //cout <<"west\n";
+              objectOfPixel[i][j]=objectOfPixel[i][j-1];
+           
+          }
+          //check north neighbor
+          else if(i!=0 && objectOfPixel[i-1][j]!=0)
+          {
+            //cout <<"north\n";
+              objectOfPixel[i][j]=objectOfPixel[i-1][j];
+          }
+          else if(i==0 && j==0)
+          {
+            //cout <<"first cell"<<endl;
+            objectOfPixel[i][j] = ++current_label;
+          }
+          else if(objectOfPixel[i-1][j]==0 &&objectOfPixel[i][j-1]==0 && objectOfPixel[i-1][j-1]==0)
+          {
+            //cout <<"new label\n";
+            objectOfPixel[i][j] = ++current_label;
+          }
+          if(objectOfPixel[i-1][j]!=objectOfPixel[i][j-1] && objectOfPixel[i-1][j]!=0 && objectOfPixel[i][j-1]!=0)
+          {
+            //cout <<objectOfPixel[i-1][j]<<endl;
+            labels[(objectOfPixel[i-1][j])] = objectOfPixel[i][j-1];
+            //labels[(objectOfPixel[i][j-1])] = labels[objectOfPixel[i][j-1]];
+          }
+        }
+        //cout <<objectOfPixel[i][j];
+      }
+      // cout <<endl;     
+    }
+    //second pass through
+    for (size_t i = 0; i < num_rows; ++i) {
+    for (size_t j = 0; j < num_columns; ++j) {
+      //cout <<objectOfPixel[i][j] << endl;
+      if(objectOfPixel[i][j] > 0)
+      {
+        int current_label = labels[objectOfPixel[i][j]];
+        if(current_label!=0)
+        {
+          objectOfPixel[i][j] = current_label;
+          cout<<current_label<<endl;
+        }
+        an_image.SetPixel(i,j,(objectOfPixel[i][j])*5);
+      }
+    }
+  }
+  }
 }  // namespace ComputerVisionProjects
 
 

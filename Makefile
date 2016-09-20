@@ -31,7 +31,7 @@ INCLUDES=  -I.
 LIBS_ALL =  -L/usr/lib -L/usr/local/lib
 
 
-#First Program (ListTest)
+#Program 0
 
 ALL_OBJ0=image.o p1.o
 PROGRAM_0=p1
@@ -39,9 +39,18 @@ PROGRAM_0=p1
 $(PROGRAM_0): $(ALL_OBJ0)
 	g++ $(C++FLAG) -o $(EXEC_DIR)/$@ $(ALL_OBJ0) $(INCLUDES) $(LIBS_ALL)
 
+#Program 1
+ALL_OBJ1=image.o p2.o
+PROGRAM_1=p2
+
+$(PROGRAM_1): $(ALL_OBJ1)
+	g++ $(C++FLAG) -o $(EXEC_DIR)/$@ $(ALL_OBJ1) $(INCLUDES) $(LIBS_ALL)
 
 all:
 	make $(PROGRAM_0)
+	make $(PROGRAM_1)
+	
+
 
 
 clean:
