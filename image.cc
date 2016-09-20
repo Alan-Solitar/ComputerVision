@@ -11,6 +11,7 @@
 #include <cstring>
 #include <unordered_map>
 #include <vector>
+#include "DisjSets.h"
 
 
 using namespace std;
@@ -306,11 +307,16 @@ void LabelImage( Image &an_image) {
 
 
   int current_label = 0;
+  int current_Grey_Scale= 30;
+  int num_sets=200;
   const int num_rows = an_image.num_rows();
   const int num_columns = an_image.num_columns();
   const int colors = an_image.num_gray_levels();
   vector<vector<int>> objectOfPixel(num_rows,vector<int>(num_columns,0));
   unordered_map<int, int> labels;
+
+  DisjSets labelSet(num_sets);
+  unordered_map<int,int> colorsMap;
 
 
   for (int i = 0; i < num_rows; ++i) {
@@ -349,7 +355,8 @@ void LabelImage( Image &an_image) {
           if(objectOfPixel[i-1][j]!=objectOfPixel[i][j-1] && objectOfPixel[i-1][j]!=0 && objectOfPixel[i][j-1]!=0)
           {
             //cout <<objectOfPixel[i-1][j]<<endl;
-            labels[(objectOfPixel[i-1][j])] = objectOfPixel[i][j-1];
+            labelSet.unionSets(objectOfPixel[i-1][j], objectOfPixel[i][j-1]);
+            //labels[(objectOfPixel[i-1][j])] = objectOfPixel[i][j-1];
             //labels[(objectOfPixel[i][j-1])] = labels[objectOfPixel[i][j-1]];
           }
         }
@@ -363,13 +370,20 @@ void LabelImage( Image &an_image) {
       //cout <<objectOfPixel[i][j] << endl;
       if(objectOfPixel[i][j] > 0)
       {
-        int current_label = labels[objectOfPixel[i][j]];
-        if(current_label!=0)
+        //int current_label = labels[objectOfPixel[i][j]];
+        //if(current_label!=0)
+       // {
+        //  objectOfPixel[i][j] = current_label;
+         // cout<<current_label<<endl;
+       // }
+        int pixelLabel = labelSet.find(objectOfPixel[i][j]);
+        int c = colorsMap[pixelLabel];
+        if(c==0)
         {
-          objectOfPixel[i][j] = current_label;
-          cout<<current_label<<endl;
+          c = colorsMap[pixelLabel]=current_Grey_Scale;
+          current_Grey_Scale+=30;
         }
-        an_image.SetPixel(i,j,(objectOfPixel[i][j])*5);
+        an_image.SetPixel(i,j,c);
       }
     }
   }
