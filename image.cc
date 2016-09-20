@@ -307,7 +307,7 @@ void LabelImage( Image &an_image) {
 
 
   int current_label = 0;
-  int current_Grey_Scale= 30;
+  int current_Grey_Scale= 10;
   int num_sets=200;
   const int num_rows = an_image.num_rows();
   const int num_columns = an_image.num_columns();
@@ -319,47 +319,51 @@ void LabelImage( Image &an_image) {
   unordered_map<int,int> colorsMap;
 
 
-  for (int i = 0; i < num_rows; ++i) {
-    for (int j = 0; j < num_columns; ++j) {
-        if(an_image.GetPixel(i,j)==255) {
 
-          //check north west neighbor
-          if(j!=0 && i!=0 && objectOfPixel[i-1][j-1]!=0)
-          {
+  for (size_t i = 0; i < num_rows; ++i) {
+    for (size_t j = 0; j < num_columns; ++j) {
+        if(an_image.GetPixel(i,j)==0) continue;  
+
+          if(i==0 && j==0) {
+            objectOfPixel[i][j]=++current_label;
+            continue;
+            //labelSet.unionSets(current_label,current_label);
+          } 
+          if(i==0) {
+            objectOfPixel[i][j] = objectOfPixel[i][j-1]!=0?objectOfPixel[i][j-1]:++current_label;
+            continue;
+          } 
+          if(j==0) {
+            objectOfPixel[i][j] = objectOfPixel[i-1][j]!=0?objectOfPixel[i-1][j]:++current_label;
+            continue;
+          } 
+
+            int northWest = objectOfPixel[i-1][j-1];
+            int west = objectOfPixel[i][j-1];
+            int north = objectOfPixel[i-1][j];
+          
+            //check north west neighbor
+            if(northWest!=0) {
             //cout <<"Northwest\n";
-              objectOfPixel[i][j]=objectOfPixel[i-1][j-1]; 
-          }
-          //check west neighbor
-          else if(j!=0 && objectOfPixel[i][j-1]!=0)
-          {
+              objectOfPixel[i][j]=northWest; 
+            }
+            //check west neighbor
+            else if(west!=0 && north==0) {
               //cout <<"west\n";
-              objectOfPixel[i][j]=objectOfPixel[i][j-1];
-           
-          }
-          //check north neighbor
-          else if(i!=0 && objectOfPixel[i-1][j]!=0)
-          {
+              objectOfPixel[i][j]=west;           
+            }
+            //check north neighbor
+            else if(north!=0 && west==0) {
             //cout <<"north\n";
-              objectOfPixel[i][j]=objectOfPixel[i-1][j];
-          }
-          else if(i==0 && j==0)
-          {
-            //cout <<"first cell"<<endl;
-            objectOfPixel[i][j] = ++current_label;
-          }
-          else if(objectOfPixel[i-1][j]==0 &&objectOfPixel[i][j-1]==0 && objectOfPixel[i-1][j-1]==0)
-          {
-            //cout <<"new label\n";
-            objectOfPixel[i][j] = ++current_label;
-          }
-          if(objectOfPixel[i-1][j]!=objectOfPixel[i][j-1] && objectOfPixel[i-1][j]!=0 && objectOfPixel[i][j-1]!=0)
-          {
-            //cout <<objectOfPixel[i-1][j]<<endl;
-            labelSet.unionSets(objectOfPixel[i-1][j], objectOfPixel[i][j-1]);
-            //labels[(objectOfPixel[i-1][j])] = objectOfPixel[i][j-1];
-            //labels[(objectOfPixel[i][j-1])] = labels[objectOfPixel[i][j-1]];
-          }
-        }
+              objectOfPixel[i][j]=north;
+            } else if(north ==0 && west ==0) {
+              objectOfPixel[i][j]=++current_label;
+            } else {  //  if(north!=0 && west!=0) {
+              cout <<"combining"<<north<<" and "<<west<<endl;
+              objectOfPixel[i][i]=north;
+              int x = labelSet.find(north);
+              labelSet.unionSets(x, west);
+            } 
         //cout <<objectOfPixel[i][j];
       }
       // cout <<endl;     
@@ -370,22 +374,20 @@ void LabelImage( Image &an_image) {
       //cout <<objectOfPixel[i][j] << endl;
       if(objectOfPixel[i][j] > 0)
       {
-        //int current_label = labels[objectOfPixel[i][j]];
-        //if(current_label!=0)
-       // {
-        //  objectOfPixel[i][j] = current_label;
-         // cout<<current_label<<endl;
-       // }
         int pixelLabel = labelSet.find(objectOfPixel[i][j]);
         int c = colorsMap[pixelLabel];
         if(c==0)
         {
-          c = colorsMap[pixelLabel]=current_Grey_Scale;
-          current_Grey_Scale+=30;
+          colorsMap[pixelLabel]=current_Grey_Scale;
+          current_Grey_Scale+=1;
         }
         an_image.SetPixel(i,j,c);
       }
     }
+  }
+  for(auto x: colorsMap)
+  {
+    cout <<x.first <<endl;
   }
   }
 void OutputDatabase(Image &an_image)
