@@ -388,6 +388,10 @@ void LabelImage( Image &an_image) {
     }
   }
   }
+void OutputDatabase(Image &an_image)
+{
+
+}
 }  // namespace ComputerVisionProjects
 
 
