@@ -49,11 +49,11 @@ void Image:: ConvertToBinary(int threshold) {
 		for (int j = 0; j < num_columns_; ++j) {
 			if (GetPixel(i, j) >= threshold) {
 				SetPixel(i, j, 255);
-        std::cout << GetPixel(i,j)<<endl;
+        //std::cout << GetPixel(i,j)<<endl;
       }
 			else {
 				SetPixel(i, j, 0);
-        cout << GetPixel(i,j)<<endl;
+        //cout << GetPixel(i,j)<<endl;
       }
 		}
 	}
@@ -358,9 +358,11 @@ void LabelImage( Image &an_image) {
               objectOfPixel[i][j]=north;
             } else if(north ==0 && west ==0) {
               objectOfPixel[i][j]=++current_label;
+              
             } else {  //  if(north!=0 && west!=0) {
-              cout <<"combining"<<north<<" and "<<west<<endl;
-              objectOfPixel[i][i]=north;
+              //cout <<"combining"<<north<<" and "<<west<<endl;
+              
+              objectOfPixel[i][j]=north;
               int x = labelSet.find(north);
               labelSet.unionSets(x, west);
             } 
@@ -379,7 +381,8 @@ void LabelImage( Image &an_image) {
         if(c==0)
         {
           colorsMap[pixelLabel]=current_Grey_Scale;
-          current_Grey_Scale+=1;
+          current_Grey_Scale+=20;
+          cout <<pixelLabel<<endl;
         }
         an_image.SetPixel(i,j,c);
       }

@@ -49,7 +49,12 @@ $(PROGRAM_1): $(ALL_OBJ1)
 all:
 	make $(PROGRAM_0)
 	make $(PROGRAM_1)
-	
+
+runp1: 	
+		./$(PROGRAM_0) two_objects.pgm 140 p1output.pgm
+runp2: 	
+		./$(PROGRAM_1) p1output.pgm p2output.pgm
+
 
 
 
