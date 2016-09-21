@@ -400,20 +400,33 @@ void OutputDatabase(Image &an_image)
 void CalculateArea(Image &an_image)
 {
   unordered_map<int,int> areas;
+  unordered_map<int,int> x;
+  unordered_map<int,int> y;
   const int num_rows = an_image.num_rows();
   const int num_columns = an_image.num_columns();
 
   for (size_t i = 0; i < num_rows; ++i) {
     for (size_t j = 0; j < num_columns; ++j) {
-      int pixel = an_image.GetPixel(i,j);
-      if(pixel > 0)
-        areas[pixel]++;
+      int pixelValue = an_image.GetPixel(i,j);
+      if(pixelValue > 0) {
+        areas[pixelValue]++;
+        x[pixelValue]+=i;
+        y[pixelValue]+=j;
+      }
+
     }
   }
   for(auto area:areas)
     {
       cout << "area: " <<area.second <<endl;
+      float xCenter = (x[area.first])/(float)area.second;
+      float yCenter = (y[area.first])/(float)area.second;
+      cout <<"x: "<<xCenter<<endl;
+      cout <<"y: "<<yCenter<<endl;
+
+
     }
+
 }
 }  // namespace ComputerVisionProjects
 
