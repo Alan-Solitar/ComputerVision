@@ -397,6 +397,24 @@ void OutputDatabase(Image &an_image)
 {
 
 }
+void CalculateArea(Image &an_image)
+{
+  unordered_map<int,int> areas;
+  const int num_rows = an_image.num_rows();
+  const int num_columns = an_image.num_columns();
+
+  for (size_t i = 0; i < num_rows; ++i) {
+    for (size_t j = 0; j < num_columns; ++j) {
+      int pixel = an_image.GetPixel(i,j);
+      if(pixel > 0)
+        areas[pixel]++;
+    }
+  }
+  for(auto area:areas)
+    {
+      cout << "area: " <<area.second <<endl;
+    }
+}
 }  // namespace ComputerVisionProjects
 
 

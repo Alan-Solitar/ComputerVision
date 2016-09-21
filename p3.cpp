@@ -8,7 +8,7 @@ using namespace ComputerVisionProjects;
 
 int main(int argc, char **argv) {
 
-	if (argc != 3) {
+	if (argc != 4) {
 		printf("Usage: %s file1 file2 file3\n", argv[0]);
 		return 0;
 	}
@@ -22,11 +22,11 @@ int main(int argc, char **argv) {
 		cout << "Can't open file " << input_file << endl;
 		return 0;
 	}
-	LabelImage(an_image);
-
+	CalculateArea(an_image);
 
 	if (!WriteImage(output_file, an_image)) {
 		cout << "Can't write to file " << output_file << endl;
 		return 0;
 	}
+
 }

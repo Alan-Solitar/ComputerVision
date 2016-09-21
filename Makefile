@@ -46,14 +46,27 @@ PROGRAM_1=p2
 $(PROGRAM_1): $(ALL_OBJ1)
 	g++ $(C++FLAG) -o $(EXEC_DIR)/$@ $(ALL_OBJ1) $(INCLUDES) $(LIBS_ALL)
 
+#Program 2
+ALL_OBJ2=image.o DisjSets.o p3.o
+PROGRAM_2=p3
+
+$(PROGRAM_2): $(ALL_OBJ2)
+	g++ $(C++FLAG) -o $(EXEC_DIR)/$@ $(ALL_OBJ2) $(INCLUDES) $(LIBS_ALL)
+
 all:
 	make $(PROGRAM_0)
 	make $(PROGRAM_1)
+	make $(PROGRAM_2)
+
 
 runp1: 	
 		./$(PROGRAM_0) two_objects.pgm 140 p1output.pgm
 runp2: 	
 		./$(PROGRAM_1) p1output.pgm p2output.pgm
+runp3: 	
+		./$(PROGRAM_2) p2output.pgm out.pgm out2.pgm
+
+
 
 
 
