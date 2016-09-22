@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <vector>
 #include "DisjSets.h"
+#include <math.h>
 
 
 using namespace std;
@@ -400,8 +401,8 @@ void OutputDatabase(Image &an_image)
 void CalculateArea(Image &an_image)
 {
   unordered_map<int,int> areas;
-  unordered_map<int,int> x;
-  unordered_map<int,int> y;
+  unordered_map<int,int> x,y;
+  unordered_map<int,float> a, aPrime;
   const int num_rows = an_image.num_rows();
   const int num_columns = an_image.num_columns();
 
@@ -412,21 +413,27 @@ void CalculateArea(Image &an_image)
         areas[pixelValue]++;
         x[pixelValue]+=i;
         y[pixelValue]+=j;
+        aPrime[pixelValue]+=pow(i,2);
       }
-
     }
   }
   for(auto area:areas)
     {
       cout << "area: " <<area.second <<endl;
-      float xCenter = (x[area.first])/(float)area.second;
-      float yCenter = (y[area.first])/(float)area.second;
+      //Centroid calculations
+      int pValue = area.first;
+      int currentArea = area.second;
+      float xCenter = (x[pValue)/(float)currentArea
+      float yCenter = (y[pValue])/(float)currentArea
+
+      //
+      a[pValue] = aPrime[pValue] - pow(xCenter,2)*currentArea; 
       cout <<"x: "<<xCenter<<endl;
       cout <<"y: "<<yCenter<<endl;
-
-
     }
 
+    //find a, b, c
+    
 }
 }  // namespace ComputerVisionProjects
 
