@@ -402,7 +402,7 @@ void CalculateArea(Image &an_image)
 {
   unordered_map<int,int> areas;
   unordered_map<int,int> x,y;
-  unordered_map<int,float> a, aPrime;
+  unordered_map<int,float> a, aPrime,b,bPrime,c,cPrime;
   const int num_rows = an_image.num_rows();
   const int num_columns = an_image.num_columns();
 
@@ -414,6 +414,9 @@ void CalculateArea(Image &an_image)
         x[pixelValue]+=i;
         y[pixelValue]+=j;
         aPrime[pixelValue]+=pow(i,2);
+        bPrime[pixelValue]+=(2*i*j);
+        cPrime[pixelValue]+=pow(j,2);
+
       }
     }
   }
