@@ -446,8 +446,10 @@ void CalculateArea(Image &an_image, std::string output_file)
       cout <<"x: "<<xCenter<<endl;
       cout <<"y: "<<yCenter<<endl;
       float theta = atan2(b[pValue],a[pValue]-c[pValue]);
-      minMoment = a[pValue]*sin(theta) - b[pValue]*sin(theta) + c[pValue]*pow(cos(theta),2)
+      float minMoment = a[pValue]*sin(theta) - b[pValue]*sin(theta) + c[pValue]*pow(cos(theta),2);
       writer <<theta <<" ";
+      writer <<minMoment <<" ";
+
       writer << endl;
       writer << "\n";
     }
