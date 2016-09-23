@@ -22,11 +22,13 @@ int main(int argc, char **argv) {
 		cout << "Can't open file " << input_file << endl;
 		return 0;
 	}
-	CalculateArea(an_image);
+	CalculateArea(an_image, output_file);
 
+	/*
 	if (!WriteImage(output_file, an_image)) {
 		cout << "Can't write to file " << output_file << endl;
 		return 0;
 	}
+	*/
 
 }

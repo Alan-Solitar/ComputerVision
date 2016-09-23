@@ -395,12 +395,17 @@ void LabelImage( Image &an_image) {
     cout <<x.first <<endl;
   }
   }
-void OutputDatabase(Image &an_image)
+void OutputDatabase(Image &an_image, std::string output_file)
+{
+  CalculateArea(an_image, output_file);
+}
+void CalculateArea(Image &an_image, std::string output_file)
 {
 
-}
-void CalculateArea(Image &an_image)
-{
+  //create file stream
+  ofstream writer;
+  writer.open(output_file, std::ofstream::trunc);
+
   unordered_map<int,int> areas;
   unordered_map<int,int> x,y;
   unordered_map<int,float> a, aPrime,b,bPrime,c,cPrime;
@@ -415,32 +420,40 @@ void CalculateArea(Image &an_image)
         x[pixelValue]+=i;
         y[pixelValue]+=j;
         aPrime[pixelValue]+=pow(i,2);
-        bPrime[pixelValue]+=(*i*j);
+        bPrime[pixelValue]+=(i*j);
         cPrime[pixelValue]+=pow(j,2);
 
       }
     }
   }
+  int label_counter=0;
   for(auto area:areas)
     {
+      writer << ++label_counter<< " ";
       cout << "area: " <<area.second <<endl;
       //Centroid calculations
       int pValue = area.first;
       int currentArea = area.second;
-      float xCenter = (x[pValue)/(float)currentArea
-      float yCenter = (y[pValue])/(float)currentArea
-
+      float xCenter = (x[pValue])/(float)currentArea;
+      float yCenter = (y[pValue])/(float)currentArea;
+      writer << xCenter<< " ";
+      writer << yCenter<<" ";
       bPrime[pValue]*=2;
 
       a[pValue] = aPrime[pValue] - pow(xCenter,2)*currentArea;
-      a[pValue] = bPrime[pValue] - 2*XCenter*yCenter*currentArea; 
+      a[pValue] = bPrime[pValue] - 2*xCenter*yCenter*currentArea; 
       c[pValue] = cPrime[pValue] - pow(yCenter,2)*currentArea;  
       cout <<"x: "<<xCenter<<endl;
       cout <<"y: "<<yCenter<<endl;
+      float theta = atan2(b[pValue],a[pValue]-c[pValue]);
+      minMoment = a[pValue]*sin(theta) - b[pValue]*sin(theta) + c[pValue]*pow(cos(theta),2)
+      writer <<theta <<" ";
+      writer << endl;
+      writer << "\n";
     }
 
     //find a, b, c
-    
+    writer.close();
 }
 }  // namespace ComputerVisionProjects
 
