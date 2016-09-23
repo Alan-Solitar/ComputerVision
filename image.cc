@@ -13,6 +13,7 @@
 #include <vector>
 #include "DisjSets.h"
 #include <math.h>
+#include <fstream>
 
 
 using namespace std;
@@ -430,9 +431,9 @@ void CalculateArea(Image &an_image)
       float yCenter = (y[pValue])/(float)currentArea
 
       bPrime[pValue]*=2;
-      //
+
       a[pValue] = aPrime[pValue] - pow(xCenter,2)*currentArea;
-      a[pValue] = bPrime[pValue] - pow(xCenter,2)*currentArea; 
+      a[pValue] = bPrime[pValue] - 2*XCenter*yCenter*currentArea; 
       c[pValue] = cPrime[pValue] - pow(yCenter,2)*currentArea;  
       cout <<"x: "<<xCenter<<endl;
       cout <<"y: "<<yCenter<<endl;
