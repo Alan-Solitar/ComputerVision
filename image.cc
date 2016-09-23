@@ -412,6 +412,7 @@ void CalculateArea(Image &an_image, std::string output_file)
   const int num_rows = an_image.num_rows();
   const int num_columns = an_image.num_columns();
 
+  //go through and calculate values needed for the orientation and centroid
   for (size_t i = 0; i < num_rows; ++i) {
     for (size_t j = 0; j < num_columns; ++j) {
       int pixelValue = an_image.GetPixel(i,j);
@@ -427,26 +428,36 @@ void CalculateArea(Image &an_image, std::string output_file)
     }
   }
   int label_counter=0;
+  //loop through each object
   for(auto area:areas)
     {
+      //write label
       writer << ++label_counter<< " ";
-      cout << "area: " <<area.second <<endl;
-      //Centroid calculations
+      
+      //Cache values
       int pValue = area.first;
       int currentArea = area.second;
+
+      //Centroid calculations
       float xCenter = (x[pValue])/(float)currentArea;
       float yCenter = (y[pValue])/(float)currentArea;
+
+      //write centroid valeus
       writer << xCenter<< " ";
       writer << yCenter<<" ";
+
+      //must do this
       bPrime[pValue]*=2;
 
+
+      //calculate values of a, b, c
       a[pValue] = aPrime[pValue] - pow(xCenter,2)*currentArea;
-      a[pValue] = bPrime[pValue] - 2*xCenter*yCenter*currentArea; 
+      b[pValue] = bPrime[pValue] - 2*xCenter*yCenter*currentArea; 
       c[pValue] = cPrime[pValue] - pow(yCenter,2)*currentArea;  
-      cout <<"x: "<<xCenter<<endl;
-      cout <<"y: "<<yCenter<<endl;
+      
+      //theta and min moment
       float theta = atan2(b[pValue],a[pValue]-c[pValue]);
-      float minMoment = a[pValue]*sin(theta) - b[pValue]*sin(theta) + c[pValue]*pow(cos(theta),2);
+      float minMoment = a[pValue]*pow(sin(theta),2) - b[pValue]*sin(theta)*cos(theta) + c[pValue]*pow(cos(theta),2);
       writer <<theta <<" ";
       writer <<minMoment <<" ";
 
@@ -456,6 +467,11 @@ void CalculateArea(Image &an_image, std::string output_file)
 
     //find a, b, c
     writer.close();
+
+}
+void DrawBlackDot(Image &an_image, int x, int y)
+{
+  an_image.SetPixel(x,y,0);
 }
 }  // namespace ComputerVisionProjects
 

@@ -83,6 +83,7 @@ void DrawLine(int x0, int y0, int x1, int y1, int color,
 void LabelImage(Image &an_image);
 void OutputDatabase(Image &an_image, std::string output_file);
 void CalculateArea(Image &an_image, std::string output_file);
+void DrawBlackDot(Image &an_image, int x, int y);
 }  // namespace ComputerVisionProjects
 
 #endif  // COMPUTER_VISION_IMAGE_H_
