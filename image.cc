@@ -308,6 +308,7 @@ DrawLine(int x0, int y0, int x1, int y1, int color,
 void LabelImage( Image &an_image) {
 
 
+  const double pi = 3.1415926535897;
   int current_label = 0;
   int current_Grey_Scale= 10;
   int num_sets=200;
@@ -360,10 +361,10 @@ void LabelImage( Image &an_image) {
               objectOfPixel[i][j]=north;
             } else if(north ==0 && west ==0) {
               objectOfPixel[i][j]=++current_label;
+              //labelSet.unionSets(current_label,current_label);
               
             } else {  //  if(north!=0 && west!=0) {
               //cout <<"combining"<<north<<" and "<<west<<endl;
-              
               objectOfPixel[i][j]=north;
               int x = labelSet.find(north);
               labelSet.unionSets(x, west);
@@ -386,7 +387,7 @@ void LabelImage( Image &an_image) {
           current_Grey_Scale+=20;
           cout <<pixelLabel<<endl;
         }
-        an_image.SetPixel(i,j,c);
+        an_image.SetPixel(i,j,colorsMap[pixelLabel]);
       }
     }
   }
@@ -401,6 +402,7 @@ void OutputDatabase(Image &an_image, std::string output_file)
 }
 void CalculateArea(Image &an_image, std::string output_file)
 {
+  const double pi = 3.1415926535897;
 
   //create file stream
   ofstream writer;
@@ -445,6 +447,7 @@ void CalculateArea(Image &an_image, std::string output_file)
       //write centroid valeus
       writer << xCenter<< " ";
       writer << yCenter<<" ";
+      writer << currentArea << " ";
 
       //must do this
       bPrime[pValue]*=2;
@@ -458,13 +461,23 @@ void CalculateArea(Image &an_image, std::string output_file)
       //theta and min moment
       float theta = atan2(b[pValue],a[pValue]-c[pValue]);
       float minMoment = a[pValue]*pow(sin(theta),2) - b[pValue]*sin(theta)*cos(theta) + c[pValue]*pow(cos(theta),2);
+      float theta2 = theta+(pi/2)
+      float  maxMoment = a[pValue]*pow(sin(theta2),2) - b[pValue]*sin(theta2)*cos(theta2) + c[pValue]*pow(cos(theta2),2);
       writer <<theta <<" ";
       writer <<minMoment <<" ";
+      writer <<maxMoment<<" ";
 
       writer << endl;
       writer << "\n";
-    }
+      int d=30;
+      int xEnd = xCenter + d*cos(theta);
+      int yEnd = yCenter + d*sin(theta);
 
+      //an_image.SetPixel(xCenter,yCenter,0)
+      DrawLine(xCenter,yCenter,xEnd,yEnd,100, &an_image);
+    }
+    //xbar + 30costheta
+    //ybar 30sintheta
     //find a, b, c
     writer.close();
 
@@ -474,7 +487,90 @@ void DrawBlackDot(Image &an_image, int x, int y)
   an_image.SetPixel(x,y,0);
 }
 }  // namespace ComputerVisionProjects
+void RecognizeObjects(Image &an_image, string db_file)
+{
+   const double pi = 3.1415926535897;
 
+  //create file stream
+  ofstream writer;
+  writer.open(output_file, std::ofstream::trunc);
+
+  unordered_map<int,int> areas;
+  unordered_map<int,int> x,y;
+  unordered_map<int,float> a, aPrime,b,bPrime,c,cPrime;
+  const int num_rows = an_image.num_rows();
+  const int num_columns = an_image.num_columns();
+
+  //go through and calculate values needed for the orientation and centroid
+  for (size_t i = 0; i < num_rows; ++i) {
+    for (size_t j = 0; j < num_columns; ++j) {
+      int pixelValue = an_image.GetPixel(i,j);
+      if(pixelValue > 0) {
+        areas[pixelValue]++;
+        x[pixelValue]+=i;
+        y[pixelValue]+=j;
+        aPrime[pixelValue]+=pow(i,2);
+        bPrime[pixelValue]+=(i*j);
+        cPrime[pixelValue]+=pow(j,2);
+
+      }
+    }
+  }
+  int label_counter=0;
+  //loop through each object
+  for(auto area:areas)
+    {
+      //write label
+      writer << ++label_counter<< " ";
+      
+      //Cache values
+      int pValue = area.first;
+      int currentArea = area.second;
+
+      //Centroid calculations
+      float xCenter = (x[pValue])/(float)currentArea;
+      float yCenter = (y[pValue])/(float)currentArea;
+
+      //write centroid valeus
+      writer << xCenter<< " ";
+      writer << yCenter<<" ";
+      writer << currentArea << " ";
+
+      //must do this
+      bPrime[pValue]*=2;
+
+
+      //calculate values of a, b, c
+      a[pValue] = aPrime[pValue] - pow(xCenter,2)*currentArea;
+      b[pValue] = bPrime[pValue] - 2*xCenter*yCenter*currentArea; 
+      c[pValue] = cPrime[pValue] - pow(yCenter,2)*currentArea;  
+      
+      //theta and min moment
+      float theta = atan2(b[pValue],a[pValue]-c[pValue]);
+      float minMoment = a[pValue]*pow(sin(theta),2) - b[pValue]*sin(theta)*cos(theta) + c[pValue]*pow(cos(theta),2);
+      float theta2 = theta+(pi/2)
+      float  maxMoment = a[pValue]*pow(sin(theta2),2) - b[pValue]*sin(theta2)*cos(theta2) + c[pValue]*pow(cos(theta2),2);
+      writer <<theta <<" ";
+      writer <<minMoment <<" ";
+      writer <<maxMoment<<" ";
+
+      writer << endl;
+      writer << "\n";
+      int d=30;
+      int xEnd = xCenter + d*cos(theta);
+      int yEnd = yCenter + d*sin(theta);
+
+      //an_image.SetPixel(xCenter,yCenter,0)
+      DrawLine(xCenter,yCenter,xEnd,yEnd,100, &an_image);
+    }
+    //xbar + 30costheta
+    //ybar 30sintheta
+    //find a, b, c
+    writer.close();
+      //recognitionCode
+}
+
+}
 
 
 

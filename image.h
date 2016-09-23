@@ -84,6 +84,7 @@ void LabelImage(Image &an_image);
 void OutputDatabase(Image &an_image, std::string output_file);
 void CalculateArea(Image &an_image, std::string output_file);
 void DrawBlackDot(Image &an_image, int x, int y);
+void RecognizeObjects(Image &an_image, string db_file);
 }  // namespace ComputerVisionProjects
 
 #endif  // COMPUTER_VISION_IMAGE_H_

@@ -64,8 +64,11 @@ runp1:
 runp2: 	
 		./$(PROGRAM_1) p1output.pgm p2output.pgm
 runp3: 	
-		./$(PROGRAM_2) p2output.pgm database.txt out2.pgm
-
+		./$(PROGRAM_2) p2output.pgm db.txt p3output.pgm
+runp4a: 	
+		./$(PROGRAM_3) many_objects_1.pgm db.txt p4output.pgm
+runp4b: 	
+		./$(PROGRAM_3) many_objects_2.pgm db.txt p4output.pgm
 
 
 

@@ -23,12 +23,11 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 	CalculateArea(an_image, output_file);
-
-	/*
-	if (!WriteImage(output_file, an_image)) {
+	
+	if (!WriteImage(output_image_file, an_image)) {
 		cout << "Can't write to file " << output_file << endl;
 		return 0;
 	}
-	*/
+	
 
 }
