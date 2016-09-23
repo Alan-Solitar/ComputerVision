@@ -414,7 +414,7 @@ void CalculateArea(Image &an_image)
         x[pixelValue]+=i;
         y[pixelValue]+=j;
         aPrime[pixelValue]+=pow(i,2);
-        bPrime[pixelValue]+=(2*i*j);
+        bPrime[pixelValue]+=(*i*j);
         cPrime[pixelValue]+=pow(j,2);
 
       }
@@ -429,8 +429,11 @@ void CalculateArea(Image &an_image)
       float xCenter = (x[pValue)/(float)currentArea
       float yCenter = (y[pValue])/(float)currentArea
 
+      bPrime[pValue]*=2;
       //
-      a[pValue] = aPrime[pValue] - pow(xCenter,2)*currentArea; 
+      a[pValue] = aPrime[pValue] - pow(xCenter,2)*currentArea;
+      a[pValue] = bPrime[pValue] - pow(xCenter,2)*currentArea; 
+      c[pValue] = cPrime[pValue] - pow(yCenter,2)*currentArea;  
       cout <<"x: "<<xCenter<<endl;
       cout <<"y: "<<yCenter<<endl;
     }
