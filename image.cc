@@ -51,11 +51,9 @@ void Image:: ConvertToBinary(int threshold) {
 		for (int j = 0; j < num_columns_; ++j) {
 			if (GetPixel(i, j) >= threshold) {
 				SetPixel(i, j, 255);
-        //std::cout << GetPixel(i,j)<<endl;
       }
 			else {
 				SetPixel(i, j, 0);
-        //cout << GetPixel(i,j)<<endl;
       }
 		}
 	}
@@ -311,17 +309,15 @@ void LabelImage( Image &an_image) {
   const double pi = 3.1415926535897;
   int current_label = 0;
   int current_Grey_Scale= 10;
-  int num_sets=200;
+  int num_sets=10000;
   const int num_rows = an_image.num_rows();
   const int num_columns = an_image.num_columns();
   const int colors = an_image.num_gray_levels();
   vector<vector<int>> objectOfPixel(num_rows,vector<int>(num_columns,0));
   unordered_map<int, int> labels;
 
-  DisjSets labelSet(num_sets);
+  DisjointSets labelSet(num_sets);
   unordered_map<int,int> colorsMap;
-
-
 
   for (size_t i = 0; i < num_rows; ++i) {
     for (size_t j = 0; j < num_columns; ++j) {
@@ -344,57 +340,52 @@ void LabelImage( Image &an_image) {
             int northWest = objectOfPixel[i-1][j-1];
             int west = objectOfPixel[i][j-1];
             int north = objectOfPixel[i-1][j];
-          
+            
             //check north west neighbor
             if(northWest!=0) {
-            //cout <<"Northwest\n";
               objectOfPixel[i][j]=northWest; 
             }
+
             //check west neighbor
             else if(west!=0 && north==0) {
-              //cout <<"west\n";
               objectOfPixel[i][j]=west;           
             }
+
             //check north neighbor
             else if(north!=0 && west==0) {
-            //cout <<"north\n";
               objectOfPixel[i][j]=north;
             } else if(north ==0 && west ==0) {
               objectOfPixel[i][j]=++current_label;
-              //labelSet.unionSets(current_label,current_label);
               
-            } else {  //  if(north!=0 && west!=0) {
-              //cout <<"combining"<<north<<" and "<<west<<endl;
+            } else {  
               objectOfPixel[i][j]=north;
-              int x = labelSet.find(north);
-              labelSet.unionSets(x, west);
+              int x = labelSet.Find(north);
+              int y = labelSet.Find(west);
+              labelSet.UnionSets(x, y);
+
             } 
-        //cout <<objectOfPixel[i][j];
+
       }
-      // cout <<endl;     
+
+
     }
     //second pass through
     for (size_t i = 0; i < num_rows; ++i) {
     for (size_t j = 0; j < num_columns; ++j) {
-      //cout <<objectOfPixel[i][j] << endl;
       if(objectOfPixel[i][j] > 0)
       {
-        int pixelLabel = labelSet.find(objectOfPixel[i][j]);
+        int pixelLabel = labelSet.Find(objectOfPixel[i][j]);
         int c = colorsMap[pixelLabel];
         if(c==0)
         {
           colorsMap[pixelLabel]=current_Grey_Scale;
           current_Grey_Scale+=20;
-          cout <<pixelLabel<<endl;
         }
         an_image.SetPixel(i,j,colorsMap[pixelLabel]);
       }
     }
   }
-  for(auto x: colorsMap)
-  {
-    cout <<x.first <<endl;
-  }
+
   }
 void OutputDatabase(Image &an_image, std::string output_file)
 {
@@ -441,15 +432,15 @@ void CalculateArea(Image &an_image, std::string output_file)
       int currentArea = area.second;
 
       //Centroid calculations
-      float xCenter = (x[pValue])/(float)currentArea;
-      float yCenter = (y[pValue])/(float)currentArea;
+      double xCenter = (x[pValue])/(double)currentArea;
+      double yCenter = (y[pValue])/(double)currentArea;
 
       //write centroid valeus
       writer << xCenter<< " ";
       writer << yCenter<<" ";
       writer << currentArea << " ";
 
-      //must do this
+      //must multiply by 2 for formula
       bPrime[pValue]*=2;
 
 
@@ -458,11 +449,11 @@ void CalculateArea(Image &an_image, std::string output_file)
       b[pValue] = bPrime[pValue] - 2*xCenter*yCenter*currentArea; 
       c[pValue] = cPrime[pValue] - pow(yCenter,2)*currentArea;  
       
-      //theta and min moment
-      float theta = atan2(b[pValue],a[pValue]-c[pValue]);
-      float minMoment = a[pValue]*pow(sin(theta),2) - b[pValue]*sin(theta)*cos(theta) + c[pValue]*pow(cos(theta),2);
-      float theta2 = theta+(pi/2)
-      float  maxMoment = a[pValue]*pow(sin(theta2),2) - b[pValue]*sin(theta2)*cos(theta2) + c[pValue]*pow(cos(theta2),2);
+      //theta, min moment, max moment
+      double theta = atan2(b[pValue],a[pValue]-c[pValue]);
+      double minMoment = a[pValue]*pow(sin(theta),2) - b[pValue]*sin(theta)*cos(theta) + c[pValue]*pow(cos(theta),2);
+      double theta2 = theta+(pi/2);
+      double  maxMoment = a[pValue]*pow(sin(theta2),2) - b[pValue]*sin(theta2)*cos(theta2) + c[pValue]*pow(cos(theta2),2);
       writer <<theta <<" ";
       writer <<minMoment <<" ";
       writer <<maxMoment<<" ";
@@ -473,27 +464,22 @@ void CalculateArea(Image &an_image, std::string output_file)
       int xEnd = xCenter + d*cos(theta);
       int yEnd = yCenter + d*sin(theta);
 
-      //an_image.SetPixel(xCenter,yCenter,0)
+      //draw line and dots
       DrawLine(xCenter,yCenter,xEnd,yEnd,100, &an_image);
+      DrawDot(an_image,xCenter,yCenter);
     }
-    //xbar + 30costheta
-    //ybar 30sintheta
-    //find a, b, c
+  
     writer.close();
 
 }
-void DrawBlackDot(Image &an_image, int x, int y)
+void DrawDot(Image &an_image, int x, int y)
 {
-  an_image.SetPixel(x,y,0);
+  an_image.SetPixel(x,y,200);
 }
-}  // namespace ComputerVisionProjects
-void RecognizeObjects(Image &an_image, string db_file)
+void RecognizeObjects(Image &an_image, vector<ComputerVisionProjects::ImageStats> imgStatVec)
 {
-   const double pi = 3.1415926535897;
-
-  //create file stream
-  ofstream writer;
-  writer.open(output_file, std::ofstream::trunc);
+  //to use to get max moment
+  const double pi = 3.1415926535897;
 
   unordered_map<int,int> areas;
   unordered_map<int,int> x,y;
@@ -512,7 +498,6 @@ void RecognizeObjects(Image &an_image, string db_file)
         aPrime[pixelValue]+=pow(i,2);
         bPrime[pixelValue]+=(i*j);
         cPrime[pixelValue]+=pow(j,2);
-
       }
     }
   }
@@ -520,57 +505,55 @@ void RecognizeObjects(Image &an_image, string db_file)
   //loop through each object
   for(auto area:areas)
     {
-      //write label
-      writer << ++label_counter<< " ";
-      
+   
       //Cache values
       int pValue = area.first;
       int currentArea = area.second;
 
       //Centroid calculations
-      float xCenter = (x[pValue])/(float)currentArea;
-      float yCenter = (y[pValue])/(float)currentArea;
+      double xCenter = (x[pValue])/(double)currentArea;
+      double yCenter = (y[pValue])/(double)currentArea;
 
-      //write centroid valeus
-      writer << xCenter<< " ";
-      writer << yCenter<<" ";
-      writer << currentArea << " ";
-
-      //must do this
+      //must mutliply by 2 per the formula
       bPrime[pValue]*=2;
-
 
       //calculate values of a, b, c
       a[pValue] = aPrime[pValue] - pow(xCenter,2)*currentArea;
       b[pValue] = bPrime[pValue] - 2*xCenter*yCenter*currentArea; 
       c[pValue] = cPrime[pValue] - pow(yCenter,2)*currentArea;  
       
-      //theta and min moment
-      float theta = atan2(b[pValue],a[pValue]-c[pValue]);
-      float minMoment = a[pValue]*pow(sin(theta),2) - b[pValue]*sin(theta)*cos(theta) + c[pValue]*pow(cos(theta),2);
-      float theta2 = theta+(pi/2)
-      float  maxMoment = a[pValue]*pow(sin(theta2),2) - b[pValue]*sin(theta2)*cos(theta2) + c[pValue]*pow(cos(theta2),2);
-      writer <<theta <<" ";
-      writer <<minMoment <<" ";
-      writer <<maxMoment<<" ";
+      //theta, min moment, max moment calculations
+      double theta = atan2(b[pValue],a[pValue]-c[pValue]);
+      double minMoment = a[pValue]*pow(sin(theta),2) - b[pValue]*sin(theta)*cos(theta) + c[pValue]*pow(cos(theta),2);
+      double theta2 = theta+(pi/2);
+      double  maxMoment = a[pValue]*pow(sin(theta2),2) - b[pValue]*sin(theta2)*cos(theta2) + c[pValue]*pow(cos(theta2),2);
+     
+   
+    //go through objects in db
+     for(auto imgStats: imgStatVec)
+     {
+        double areaDifference  = fabs(imgStats.area - currentArea);
+        float roundness = minMoment / maxMoment;
+        float compRoundness = imgStats.maxMoment/imgStats.minMoment;
+        double RoundnessDifference = fabs(roundness - compRoundness);
+       if(areaDifference <150 ||RoundnessDifference<.2)
+      {
+          int d=30;
+          int xEnd = xCenter + d*cos(theta);
+          int yEnd = yCenter + d*sin(theta);
 
-      writer << endl;
-      writer << "\n";
-      int d=30;
-      int xEnd = xCenter + d*cos(theta);
-      int yEnd = yCenter + d*sin(theta);
-
-      //an_image.SetPixel(xCenter,yCenter,0)
-      DrawLine(xCenter,yCenter,xEnd,yEnd,100, &an_image);
+          DrawLine(xCenter,yCenter,xEnd,yEnd,255, &an_image);
+          DrawDot(an_image,xCenter,yCenter);
+        }
+     }
     }
-    //xbar + 30costheta
-    //ybar 30sintheta
-    //find a, b, c
-    writer.close();
-      //recognitionCode
-}
 
 }
+
+}  // namespace ComputerVisionProjects
+
+
+
 
 
 

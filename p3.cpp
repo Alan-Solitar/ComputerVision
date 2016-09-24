@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 	CalculateArea(an_image, output_file);
 	
 	if (!WriteImage(output_image_file, an_image)) {
-		cout << "Can't write to file " << output_file << endl;
+		cout << "Can't write to file " << output_image_file << endl;
 		return 0;
 	}
 	

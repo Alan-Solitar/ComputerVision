@@ -1,35 +1,59 @@
-#ifndef DISJ_SETS_H
-#define DISJ_SETS_H
+// Disjoint set class, implementing Union-Find.
+// From the code provided by the book of Mark Allen Weiss.
 
-// DisjSets class
-//
-// CONSTRUCTION: with int representing initial number of sets
-//
-// ******************PUBLIC OPERATIONS*********************
-// void union( root1, root2 ) --> Merge two sets
-// int find( x )              --> Return set containing x
-// ******************ERRORS********************************
-// No error checking is performed
+#ifndef DISJOINT_SETS_H_
+#define DISJOINT_SETS_H_
 
+#include <cstdlib>
+#include <iostream>
 #include <vector>
-using namespace std;
 
-/**
- * Disjoint set class.
- * Use union by rank and path compression.
- * Elements in the set are numbered starting at 0.
- */
-class DisjSets
-{
-  public:
-    explicit DisjSets( int numElements );
 
-    int find( int x ) const;
-    int find( int x );
-    void unionSets( int root1, int root2 );
 
-  private:
-    vector<int> s;
+//  Disjoint set class.
+//  Use union by rank and path compression.
+//  Elements in the set are numbered starting at 0.
+class DisjointSets {
+ public:
+  explicit DisjointSets(size_t num_elements) {
+    for (int i = 0; i < num_elements; ++i)
+      the_sets_.push_back(-1);
+  }
+
+  size_t Find(size_t x) const {
+    if (x >= the_sets_.size()) abort();
+    if (the_sets_[x] < 0)
+      return x;
+    else
+      return Find(the_sets_[x]);
+  }
+
+  size_t Find(size_t x) {
+    if (x >= the_sets_.size()) abort();
+    if (the_sets_[x] < 0)
+      return x;
+    else
+      return Find(the_sets_[x]);
+  }
+  
+   
+  void UnionSets(size_t root1, size_t root2) {
+    if (root1 >= the_sets_.size()) abort();
+    if (root2 >= the_sets_.size()) abort();
+    if (root1 == root2) return;
+    if (the_sets_[root2] < the_sets_[root1]) {
+      the_sets_[root1] = root2;        
+    } else  {
+      if (the_sets_[root1] == the_sets_[root2])
+	--the_sets_[root1];        
+      the_sets_[root2] = root1;      
+    }
+  }
+  
+ private:
+
+  std::vector<int> the_sets_;
 };
 
-#endif
+
+#endif  

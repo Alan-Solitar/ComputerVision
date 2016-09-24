@@ -7,6 +7,8 @@
 
 #include <cstdlib>
 #include <string>
+#include <vector>
+
 
 namespace ComputerVisionProjects {
  
@@ -21,6 +23,18 @@ namespace ComputerVisionProjects {
 //       one_image.SetPixel(i, j, 150);
 //   WriteImage("output_file.pgm", an_image);
 //   // See image_demo.cc for read/write image.
+
+struct ImageStats
+{
+  int label;
+  float minMoment;
+  float maxMoment;
+  float theta;
+  float xCenter;
+  float yCenter;
+  float area;
+};
+
 class Image {
  public:
   Image(): num_rows_{0}, num_columns_{0}, 
@@ -83,8 +97,8 @@ void DrawLine(int x0, int y0, int x1, int y1, int color,
 void LabelImage(Image &an_image);
 void OutputDatabase(Image &an_image, std::string output_file);
 void CalculateArea(Image &an_image, std::string output_file);
-void DrawBlackDot(Image &an_image, int x, int y);
-void RecognizeObjects(Image &an_image, string db_file);
+void DrawDot(Image &an_image, int x, int y);
+void RecognizeObjects(Image &an_image, std::vector<ComputerVisionProjects::ImageStats>);
 }  // namespace ComputerVisionProjects
 
 #endif  // COMPUTER_VISION_IMAGE_H_
