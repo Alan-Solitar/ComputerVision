@@ -549,16 +549,27 @@ void RecognizeObjects(Image &an_image, vector<ComputerVisionProjects::ImageStats
     }
 
 }
-void DetectEdges(Image &an_image Vector<int<int>> convolution) {  
+void DetectEdges(Image *an_image) {  
 
-  const int num_rows = an_image.num_rows();
-  const int num_columns = an_image.num_columns();
-  vector<int<int>> sobelXFilter = {{-1,0,1},{-2,0,2},{-1,0,1}};
-  vector<int<int>> sobelXFilter = {{1,2,1},{0,0,0},{-1,-2,-1}};
+  const int num_rows = an_image->num_rows();
+  const int num_columns = an_image->num_columns();
+  std::vector<vector<int>> sobelXFilter = {{-1,0,1},{-2,0,2},{-1,0,1}};
+  std::vector<vector<int>> sobelYFilter = {{1,2,1},{0,0,0},{-1,-2,-1}};
   for (size_t i = 0; i < num_rows; ++i) {
     for (size_t j = 0; j < num_columns; ++j) {
+    
+
+      int northWest = (i==0||j==0)? 0:an_image->GetPixel(i-1,j-1);
+      int north = (i==0)? 0: an_image->GetPixel(i-1,j);
+      int northEast =(i==0||j>=num_columns-1)?0:an_image->GetPixel(i-1,j+1);
+      int southWest = (i==num_rows-1||j==0)?0:an_image->GetPixel(i+1,j-1);
+      int south = (i==num_rows-1)?0:an_image->GetPixel(i+1,j);
+      int southEast = (i==num_rows-1||j==num_columns-1)?0:an_image->GetPixel(i+1,j+1); 
+
+
+
       //x filter
-      int x = sobelXFilter[0][0] * an_image->GetPixel(i-1,j-1) + sobelXFilter[0][1] * an_image->GetPixel(i,y-1) +
+      int x = sobelXFilter[0][0] * an_image->GetPixel(i-1,j-1) + sobelXFilter[0][1] * an_image->GetPixel(i,j-1) +
       sobelXFilter[0][2] * an_image->GetPixel(i+1,j-1) + sobelXFilter[1][0] * an_image->GetPixel(i-1,j) +
       sobelXFilter[1][1] * an_image->GetPixel(i,j) + sobelXFilter[1][2] * an_image->GetPixel(i+1,j) +
       sobelXFilter[2][0] * an_image->GetPixel(i-1,j+1) + sobelXFilter[2][1] * an_image->GetPixel(i,j+1) +
@@ -572,7 +583,7 @@ void DetectEdges(Image &an_image Vector<int<int>> convolution) {
       sobelYFilter[2][2] * an_image->GetPixel(i+1,j+1);
 
       float result  = sqrt(x*x + y*y);
-
+      an_image->SetPixel(i,j,result);
     }
   }
 
