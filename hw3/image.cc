@@ -627,6 +627,14 @@ void HoughTransform(Image *an_image) {
 
 
   }
+void OutputAccumulator(vector<vector<double>> accumulator, std::string filename){
+  std::ofstream writer;
+  
+  writer.open(filename);
+
+  writer.close();
+
+}
 
 }  // namespace ComputerVisionProjects
 

@@ -101,6 +101,7 @@ void DrawDot(Image &an_image, int x, int y);
 void RecognizeObjects(Image &an_image, std::vector<ComputerVisionProjects::ImageStats>);
 void DetectEdges(Image *an_image);
 void HoughTransform(Image *an_image);
+void OutputAccumulator(std::vector<vector<double>> accumulator, std::string filename);
 }  // namespace ComputerVisionProjects
 
 #endif  // COMPUTER_VISION_IMAGE_H_
