@@ -595,22 +595,32 @@ void DetectEdges(Image *an_image) {
 
 void HoughTransform(Image *an_image) {
 
+  //constants 
   const double pi = 3.1415926535897;
   const int num_rows = an_image->num_rows();
   const int num_columns = an_image->num_columns();
-  vector<vector<double>> accumulator(num_rows,vector<int>(num_columns,0)
+  
 
 
-  //calculate roe and theta
+  //calculate max roe and max theta
   double maxRoe = sqrt(pow(num_rows,2) + pow(num_columns,2));
   double maxTheta = pi;
+  //deltas
   int dp=1;
   int dTheta=1;
+  //samples
+  int roeSamples = maxRoe/dp;
+  int thetaSamples = maxTheta/dTheta; 
+
+  //initialize vector and reserve space needed based on the sample values
+  vector<vector<double>> accumulator(roeSamples,vector<int>(thetaSamples,0);
   //x and y are used because of the equation
   for (size_t x = 0; x < num_rows; ++x) {
     for (size_t y = 0; y < num_columns; ++y) {
-      for(size_t i =0;i<maxTheta;i+=dTheta){
-        for(size_t j =0;j<MaxRoe;j+=dp){
+      if(an_image.GetPixel(i,j)==255)
+      for(size_t i =0;i<maxRoe;i+=dp){
+        for(size_t j =0;j<maxTheta;j+=dRoe){
+          double p = x*cos(j) + y*sin(j)
 
         }
       }
