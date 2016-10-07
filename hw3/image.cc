@@ -558,36 +558,58 @@ void DetectEdges(Image *an_image) {
   for (size_t i = 0; i < num_rows; ++i) {
     for (size_t j = 0; j < num_columns; ++j) {
     
-
+      //Each pixel with error checking
       int northWest = (i==0||j==0)? 0:an_image->GetPixel(i-1,j-1);
       int north = (i==0)? 0: an_image->GetPixel(i-1,j);
-      int northEast =(i==0||j>=num_columns-1)?0:an_image->GetPixel(i-1,j+1);
+      int northEast = (i==0||j>=num_columns-1)?0:an_image->GetPixel(i-1,j+1);
+      int east = (j==0)?0:an_image->GetPixel(i,j-1);
+      int center = an_image->GetPixel(i,j);
+      int west = (j==num_columns-1)? 0: an_image->GetPixel(i,j+1); 
       int southWest = (i==num_rows-1||j==0)?0:an_image->GetPixel(i+1,j-1);
       int south = (i==num_rows-1)?0:an_image->GetPixel(i+1,j);
       int southEast = (i==num_rows-1||j==num_columns-1)?0:an_image->GetPixel(i+1,j+1); 
 
 
+      //x sobel filter
+      int x = sobelXFilter[0][0] * northWest + sobelXFilter[0][1] * north +
+      sobelXFilter[0][2] * northEast + sobelXFilter[1][0] * west +
+      sobelXFilter[1][1] * center + sobelXFilter[1][2] * east +
+      sobelXFilter[2][0] * southWest + sobelXFilter[2][1] * south +
+      sobelXFilter[2][2] * southEast;
 
-      //x filter
-      int x = sobelXFilter[0][0] * an_image->GetPixel(i-1,j-1) + sobelXFilter[0][1] * an_image->GetPixel(i,j-1) +
-      sobelXFilter[0][2] * an_image->GetPixel(i+1,j-1) + sobelXFilter[1][0] * an_image->GetPixel(i-1,j) +
-      sobelXFilter[1][1] * an_image->GetPixel(i,j) + sobelXFilter[1][2] * an_image->GetPixel(i+1,j) +
-      sobelXFilter[2][0] * an_image->GetPixel(i-1,j+1) + sobelXFilter[2][1] * an_image->GetPixel(i,j+1) +
-      sobelXFilter[2][2] * an_image->GetPixel(i+1,j+1);
+      //y sobel filter
+      int y = sobelYFilter[0][0] * northWest + sobelYFilter[0][1] * north +
+      sobelYFilter[0][2] * northEast + sobelYFilter[1][0] * west +
+      sobelYFilter[1][1] * center + sobelYFilter[1][2] * east +
+      sobelYFilter[2][0] * southWest + sobelYFilter[2][1] * south +
+      sobelYFilter[2][2] * southEast;
 
-      //y filter
-            int y = sobelYFilter[0][0] * an_image->GetPixel(i-1,j-1) + sobelYFilter[0][1] * an_image->GetPixel(i,y-1) +
-      sobelYFilter[0][2] * an_image->GetPixel(i+1,j-1) + sobelYFilter[1][0] * an_image->GetPixel(i-1,j) +
-      sobelYFilter[1][1] * an_image->GetPixel(i,j) + sobelYFilter[1][2] * an_image->GetPixel(i+1,j) +
-      sobelYFilter[2][0] * an_image->GetPixel(i-1,j+1) + sobelYFilter[2][1] * an_image->GetPixel(i,j+1) +
-      sobelYFilter[2][2] * an_image->GetPixel(i+1,j+1);
-
-      float result  = sqrt(x*x + y*y);
+      //Not sure whether ceiling or floor is a better choice but I'll go with ceiling
+      //since it seems like I am likely to detect more with using ceiling.
+      int result  = ceil(sqrt(x*x + y*y));
+      cout <<x<< " "<<y<<endl;
       an_image->SetPixel(i,j,result);
     }
   }
-
 }
+
+void HoughTransform(Image *an_image) {
+
+  const int num_rows = an_image->num_rows();
+  const int num_columns = an_image->num_columns();
+  vector<vector<double>> accumulator;
+
+  //x and y are used because of the equation
+  for (size_t x = 0; i < num_rows; ++i) {
+    for (size_t y = 0; j < num_columns; ++j) {
+      for(size_t i =0;i<thetaValue;++i){
+        for(size_t j =0;j<roe;++j){
+
+        }
+      }
+
+
+  }
 
 }  // namespace ComputerVisionProjects
 

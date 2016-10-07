@@ -100,6 +100,7 @@ void CalculateArea(Image &an_image, std::string output_file);
 void DrawDot(Image &an_image, int x, int y);
 void RecognizeObjects(Image &an_image, std::vector<ComputerVisionProjects::ImageStats>);
 void DetectEdges(Image *an_image);
+void HoughTransform(Image *an_image);
 }  // namespace ComputerVisionProjects
 
 #endif  // COMPUTER_VISION_IMAGE_H_

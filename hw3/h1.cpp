@@ -22,7 +22,6 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 	DetectEdges(&an_image);
-
 	if (!WriteImage(output_file, an_image)) {
 		cout << "Can't write to file " << output_file << endl;
 		return 0;
