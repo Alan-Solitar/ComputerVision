@@ -549,25 +549,32 @@ void RecognizeObjects(Image &an_image, vector<ComputerVisionProjects::ImageStats
     }
 
 }
-void DetectEdges(Image *an_image) {  
+void DetectEdges(const Image &an_image, const string filename) {  
 
-  const int num_rows = an_image->num_rows();
-  const int num_columns = an_image->num_columns();
+  const int num_rows = an_image.num_rows();
+  const int num_columns = an_image.num_columns();
+
+  //image to write to
+  Image out_image;
+  out_image.AllocateSpaceAndSetSize(num_rows, num_columns);
+  out_image.SetNumberGrayLevels(an_image.num_gray_levels());
+
+
   std::vector<vector<int>> sobelXFilter = {{-1,0,1},{-2,0,2},{-1,0,1}};
   std::vector<vector<int>> sobelYFilter = {{1,2,1},{0,0,0},{-1,-2,-1}};
   for (size_t i = 0; i < num_rows; ++i) {
     for (size_t j = 0; j < num_columns; ++j) {
     
       //Each pixel with error checking
-      int northWest = (i==0||j==0)? 0:an_image->GetPixel(i-1,j-1);
-      int north = (i==0)? 0: an_image->GetPixel(i-1,j);
-      int northEast = (i==0||j>=num_columns-1)?0:an_image->GetPixel(i-1,j+1);
-      int east = (j==0)?0:an_image->GetPixel(i,j-1);
-      int center = an_image->GetPixel(i,j);
-      int west = (j==num_columns-1)? 0: an_image->GetPixel(i,j+1); 
-      int southWest = (i==num_rows-1||j==0)?0:an_image->GetPixel(i+1,j-1);
-      int south = (i==num_rows-1)?0:an_image->GetPixel(i+1,j);
-      int southEast = (i==num_rows-1||j==num_columns-1)?0:an_image->GetPixel(i+1,j+1); 
+      int northWest = (i==0||j==0)? 0:an_image.GetPixel(i-1,j-1);
+      int north = (i==0)? 0: an_image.GetPixel(i-1,j);
+      int northEast = (i==0||j>=num_columns-1)?0:an_image.GetPixel(i-1,j+1);
+      int east = (j==0)?0:an_image.GetPixel(i,j-1);
+      int center = an_image.GetPixel(i,j);
+      int west = (j==num_columns-1)? 0: an_image.GetPixel(i,j+1); 
+      int southWest = (i==num_rows-1||j==0)?0:an_image.GetPixel(i+1,j-1);
+      int south = (i==num_rows-1)?0:an_image.GetPixel(i+1,j);
+      int southEast = (i==num_rows-1||j==num_columns-1)?0:an_image.GetPixel(i+1,j+1); 
 
 
       //x sobel filter
@@ -587,10 +594,13 @@ void DetectEdges(Image *an_image) {
       //Not sure whether ceiling or floor is a better choice but I'll go with ceiling
       //since it seems like I am likely to detect more with using ceiling.
       int result  = ceil(sqrt(x*x + y*y));
-      cout <<x<< " "<<y<<endl;
-      an_image->SetPixel(i,j,result);
+      out_image.SetPixel(i,j,result);
+      
+
     }
   }
+  WriteImage(filename, out_image);
+
 }
 
 void HoughTransform(Image *an_image) {
@@ -613,21 +623,21 @@ void HoughTransform(Image *an_image) {
   int thetaSamples = maxTheta/dTheta; 
 
   //initialize vector and reserve space needed based on the sample values
-  vector<vector<double>> accumulator(roeSamples,vector<int>(thetaSamples,0);
+  vector<vector<int>> accumulator(thetaSamples,vector<int>(roeSamples,0));
   //x and y are used because of the equation
   for (size_t x = 0; x < num_rows; ++x) {
     for (size_t y = 0; y < num_columns; ++y) {
-      if(an_image.GetPixel(i,j)==255)
-      for(size_t i =0;i<maxRoe;i+=dp){
-        for(size_t j =0;j<maxTheta;j+=dRoe){
-          double p = x*cos(j) + y*sin(j)
-
+      if(an_image->GetPixel(x,y)==255)
+        for(size_t t =0;t<maxTheta;t+=dTheta){
+          double p = x*cos(t) - y*sin(t);
+          if(p <maxRoe && p>0)
+            accumulator[t][round(p)]++;
         }
       }
-
-
   }
-void OutputAccumulator(vector<vector<double>> accumulator, std::string filename){
+}
+/*
+void OutputAccumulator(vector<vector<int>> accumulator, std::string filename){
   std::ofstream writer;
   
   writer.open(filename);
@@ -635,6 +645,7 @@ void OutputAccumulator(vector<vector<double>> accumulator, std::string filename)
   writer.close();
 
 }
+*/
 
 }  // namespace ComputerVisionProjects
 

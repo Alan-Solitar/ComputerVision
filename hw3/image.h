@@ -99,9 +99,9 @@ void OutputDatabase(Image &an_image, std::string output_file);
 void CalculateArea(Image &an_image, std::string output_file);
 void DrawDot(Image &an_image, int x, int y);
 void RecognizeObjects(Image &an_image, std::vector<ComputerVisionProjects::ImageStats>);
-void DetectEdges(Image *an_image);
+void DetectEdges(const Image &an_image, const std::string filename);
 void HoughTransform(Image *an_image);
-void OutputAccumulator(std::vector<vector<double>> accumulator, std::string filename);
+//void OutputAccumulator(std::vector<vector<int>> accumulator, std::string filename);
 }  // namespace ComputerVisionProjects
 
 #endif  // COMPUTER_VISION_IMAGE_H_
