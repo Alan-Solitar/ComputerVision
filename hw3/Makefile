@@ -71,7 +71,7 @@ all:
 runh1: 	
 		./$(PROGRAM_0) hough_simple_1.pgm h1output.pgm
 runh2: 	
-		./$(PROGRAM_1) h1output.pgm 140 h2output.pgm
+		./$(PROGRAM_1) h1output.pgm 30 h2output.pgm
 #runp3: 	
 #		./$(PROGRAM_2) p2output.pgm db.txt p3output.pgm
 #runp4a: 	
