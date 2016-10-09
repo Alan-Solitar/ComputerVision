@@ -1,0 +1,17 @@
+prob 1.
+I= I(x)
+n = n(x) = εsin(ωx)
+I = I(x) + n(x)
+I = I(x) + εsin(ωx)
+
+I' = I'(x) + (ω)εcos(ωx)
+
+I' = I'(x) + ωεcos(ωx)
+
+This shows that depending on the value of ω, the noise can cause a fairly significant change to the value
+of the signal I
+
+prob 2. 
+
+Equation of Line:
+xcosθ+ ysinθ = ρ

@@ -603,10 +603,11 @@ void DetectEdges(const Image &an_image, const string filename) {
 
 }
 
-void HoughTransform(Image *an_image) {
+void HoughTransform(Image *an_image, const std::string filename) {
 
   //constants 
-  const double pi = 3.1415926535897;
+  const double piDegrees = 3.1415926535897;
+  const double piRadians = 180;
   const int num_rows = an_image->num_rows();
   const int num_columns = an_image->num_columns();
   
@@ -614,7 +615,7 @@ void HoughTransform(Image *an_image) {
 
   //calculate max roe and max theta
   double maxRoe = sqrt(pow(num_rows,2) + pow(num_columns,2));
-  double maxTheta = pi;
+  double maxTheta = piDegrees;
   //deltas
   int dp=1;
   int dTheta=1;
@@ -622,19 +623,44 @@ void HoughTransform(Image *an_image) {
   int roeSamples = maxRoe/dp;
   int thetaSamples = maxTheta/dTheta; 
 
+
+  //image to write to
+  Image out_image;
+  out_image.AllocateSpaceAndSetSize(thetaSamples, roeSamples);
+  out_image.SetNumberGrayLevels(an_image->num_gray_levels());
+
   //initialize vector and reserve space needed based on the sample values
   vector<vector<int>> accumulator(thetaSamples,vector<int>(roeSamples,0));
   //x and y are used because of the equation
   for (size_t x = 0; x < num_rows; ++x) {
     for (size_t y = 0; y < num_columns; ++y) {
-      if(an_image->GetPixel(x,y)==255)
+      //if(an_image->GetPixel(x,y)==255){
         for(size_t t =0;t<maxTheta;t+=dTheta){
-          double p = x*cos(t) - y*sin(t);
+          double p = x*cos(DegToRad(t)) - y*sin(DegToRad(t));
           if(p <maxRoe && p>0)
             accumulator[t][round(p)]++;
         }
-      }
+      //}
+    }
   }
+  
+  int threshold =30;
+  int d=30;
+  cout<<maxTheta << " "<<maxRoe<<endl;
+   for (size_t x = 0; x < maxTheta; ++x) {
+    for (size_t y = 0; y < maxRoe; ++y) {
+        if(accumulator[x][y] > threshold){
+          //cout<<x<<  " " << y << endl;
+            int xEnd = x + d*cos(DegToRad(x));
+            int yEnd = y + d*sin(DegToRad(x));
+            //DrawLine(x,y,xEnd,yEnd,100, &out_image);
+        }
+    }
+  }
+  WriteImage(filename, out_image);
+}
+double DegToRad(double degrees){
+  return degrees*3.1415926535897/180;
 }
 /*
 void OutputAccumulator(vector<vector<int>> accumulator, std::string filename){
