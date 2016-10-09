@@ -602,8 +602,7 @@ void DetectEdges(const Image &an_image, const string filename) {
   WriteImage(filename, out_image);
 
 }
-
-void HoughTransform(Image *an_image, const std::string filename) {
+void HoughTransform(Image *an_image, const std::string filename, const std::string output_accumulator) {
 
   //constants 
   const double piRadians = 3.1415926535897;
@@ -611,8 +610,6 @@ void HoughTransform(Image *an_image, const std::string filename) {
   const int num_rows = an_image->num_rows();
   const int num_columns = an_image->num_columns();
   
-
-
   //calculate max roe and max theta
   double maxRoe = sqrt(pow(num_rows,2) + pow(num_columns,2));
   double maxTheta = piDegrees;
@@ -646,32 +643,134 @@ void HoughTransform(Image *an_image, const std::string filename) {
       }
     }
   }
-
   
-  int threshold =30;
+
+  //writer to output accumulator to file
+  std::ofstream writer;
+  
+  writer.open(output_accumulator);
+
+
+  int threshold =200;
   int d=30;
   int greyValue;
   //cout<<maxTheta << " "<<maxRoe<<endl;
    for (size_t x = 0; x < maxTheta; ++x) {
     for (size_t y = 0; y < maxRoe; ++y) {
+
         int numberOfVotes = accumulator[x][y];
-        cout<<numberOfVotes<<endl;
+        writer << numberOfVotes << " ";   
         if(numberOfVotes > threshold){
+          cout<<numberOfVotes<<endl;
           //cout<<x<<  " " << y << endl;
             int xEnd = x + d*cos(DegToRad(x));
             int yEnd = y + d*sin(DegToRad(x));
             DrawLine(x,y,xEnd,yEnd,(255/numberOfVotes)+100, &out_image);
         }
     }
+    writer <<endl;
   }
-  WriteImage(filename, out_image);
+  writer.close();
   
+  //write hough image to file
+  WriteImage(filename, out_image);
+
+ 
+
+  
+
+
+  //OutputAccumulator(accumulator, output_accumulator);
 }
+
 double DegToRad(double degrees){
   return degrees*3.1415926535897/180;
 }
+
+void HoughTransform(Image *an_image, const std::string filename, const std::string output_accumulator, int threshold) {
+
+  //constants 
+  const double piRadians = 3.1415926535897;
+  const double piDegrees = 180;
+  const int num_rows = an_image->num_rows();
+  const int num_columns = an_image->num_columns();
+  
+  //calculate max roe and max theta
+  double maxRoe = sqrt(pow(num_rows,2) + pow(num_columns,2));
+  double maxTheta = piDegrees;
+  //deltas
+  int dp=1;
+  int dTheta=1;
+  //samples
+  int roeSamples = maxRoe/dp;
+  int thetaSamples = maxTheta/dTheta; 
+
+
+  //image to write to
+  Image out_image;
+  out_image.AllocateSpaceAndSetSize(thetaSamples, roeSamples);
+  out_image.SetNumberGrayLevels(an_image->num_gray_levels());
+
+  //initialize vector and reserve space needed based on the sample values
+  vector<vector<int>> accumulator(thetaSamples + 1,vector<int>(roeSamples +1,0));
+  //x and y are used because of the equation
+  for (size_t x = 0; x < num_rows; ++x) {
+    for (size_t y = 0; y < num_columns; ++y) {
+      if(an_image->GetPixel(x,y)==255){
+        for(size_t t =1;t<maxTheta;t+=dTheta){
+          double p = x*cos(DegToRad(t)) + y*sin(DegToRad(t));
+          //cout << "p:"<<p<<endl;
+          if(p < maxRoe && p>=0){
+            //cout<<"t:"<<t << " p:"<<p<<endl;
+            accumulator[t][round(p)]++;
+          }
+        }
+      }
+    }
+  }
+  
+
+  //writer to output accumulator to file
+  std::ofstream writer;
+  
+  writer.open(output_accumulator);
+
+
+  int threshold =200;
+  int d=30;
+  int greyValue;
+  //cout<<maxTheta << " "<<maxRoe<<endl;
+   for (size_t x = 0; x < maxTheta; ++x) {
+    for (size_t y = 0; y < maxRoe; ++y) {
+
+        int numberOfVotes = accumulator[x][y];
+        writer << numberOfVotes << " ";   
+        if(numberOfVotes > threshold){
+          cout<<numberOfVotes<<endl;
+          //cout<<x<<  " " << y << endl;
+            int xEnd = x + d*cos(DegToRad(x));
+            int yEnd = y + d*sin(DegToRad(x));
+            DrawLine(x,y,xEnd,yEnd,(255/numberOfVotes)+100, &out_image);
+        }
+    }
+    writer <<endl;
+  }
+  writer.close();
+  
+  //write hough image to file
+  WriteImage(filename, out_image);
+
+ 
+
+  
+
+
+  //OutputAccumulator(accumulator, output_accumulator);
+}
+
+
 /*
-void OutputAccumulator(vector<vector<int>> accumulator, std::string filename){
+void OutputAccumulator(const vector<vector<int> > &accumulator, std::string filename){
   std::ofstream writer;
   
   writer.open(filename);
@@ -680,6 +779,7 @@ void OutputAccumulator(vector<vector<int>> accumulator, std::string filename){
 
 }
 */
+
 
 }  // namespace ComputerVisionProjects
 

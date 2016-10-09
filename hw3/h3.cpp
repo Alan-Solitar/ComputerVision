@@ -21,7 +21,8 @@ int main(int argc, char **argv) {
 		cout << "Can't open file " << input_file << endl;
 		return 0;
 	}
-	HoughTransform(&an_image, output_file);
+	HoughTransform(&an_image, output_file, output_accumulator);
+
 	/*
 	if (!WriteImage(output_file, an_image)) {
 		cout << "Can't write to file " << output_file << endl;
