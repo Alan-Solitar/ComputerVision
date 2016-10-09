@@ -606,8 +606,8 @@ void DetectEdges(const Image &an_image, const string filename) {
 void HoughTransform(Image *an_image, const std::string filename) {
 
   //constants 
-  const double piDegrees = 3.1415926535897;
-  const double piRadians = 180;
+  const double piRadians = 3.1415926535897;
+  const double piDegrees = 180;
   const int num_rows = an_image->num_rows();
   const int num_columns = an_image->num_columns();
   
