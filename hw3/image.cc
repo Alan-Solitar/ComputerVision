@@ -630,20 +630,24 @@ void HoughTransform(Image *an_image, const std::string filename) {
   out_image.SetNumberGrayLevels(an_image->num_gray_levels());
 
   //initialize vector and reserve space needed based on the sample values
-  vector<vector<int>> accumulator(thetaSamples,vector<int>(roeSamples,0));
+  vector<vector<int>> accumulator(thetaSamples + 1,vector<int>(roeSamples +1,0));
   //x and y are used because of the equation
   for (size_t x = 0; x < num_rows; ++x) {
     for (size_t y = 0; y < num_columns; ++y) {
-      //if(an_image->GetPixel(x,y)==255){
-        for(size_t t =0;t<maxTheta;t+=dTheta){
-          double p = x*cos(DegToRad(t)) - y*sin(DegToRad(t));
-          if(p <maxRoe && p>0)
+      if(an_image->GetPixel(x,y)==255){
+        for(size_t t =1;t<maxTheta;t+=dTheta){
+          double p = x*cos(DegToRad(t)) + y*sin(DegToRad(t));
+          cout << "p:"<<p<<endl;
+          if(p < maxRoe && p>=0){
+            cout<<"t:"<<t << " p:"<<p<<endl;
             accumulator[t][round(p)]++;
+          }
         }
-      //}
+      }
     }
   }
-  
+
+  /*
   int threshold =30;
   int d=30;
   cout<<maxTheta << " "<<maxRoe<<endl;
@@ -658,6 +662,7 @@ void HoughTransform(Image *an_image, const std::string filename) {
     }
   }
   WriteImage(filename, out_image);
+  */
 }
 double DegToRad(double degrees){
   return degrees*3.1415926535897/180;
