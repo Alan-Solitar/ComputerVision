@@ -637,9 +637,9 @@ void HoughTransform(Image *an_image, const std::string filename) {
       if(an_image->GetPixel(x,y)==255){
         for(size_t t =1;t<maxTheta;t+=dTheta){
           double p = x*cos(DegToRad(t)) + y*sin(DegToRad(t));
-          cout << "p:"<<p<<endl;
+          //cout << "p:"<<p<<endl;
           if(p < maxRoe && p>=0){
-            cout<<"t:"<<t << " p:"<<p<<endl;
+            //cout<<"t:"<<t << " p:"<<p<<endl;
             accumulator[t][round(p)]++;
           }
         }
@@ -647,22 +647,25 @@ void HoughTransform(Image *an_image, const std::string filename) {
     }
   }
 
-  /*
+  
   int threshold =30;
   int d=30;
-  cout<<maxTheta << " "<<maxRoe<<endl;
+  int greyValue;
+  //cout<<maxTheta << " "<<maxRoe<<endl;
    for (size_t x = 0; x < maxTheta; ++x) {
     for (size_t y = 0; y < maxRoe; ++y) {
-        if(accumulator[x][y] > threshold){
+        int numberOfVotes = accumulator[x][y];
+        cout<<numberOfVotes<<endl;
+        if(numberOfVotes > threshold){
           //cout<<x<<  " " << y << endl;
             int xEnd = x + d*cos(DegToRad(x));
             int yEnd = y + d*sin(DegToRad(x));
-            //DrawLine(x,y,xEnd,yEnd,100, &out_image);
+            DrawLine(x,y,xEnd,yEnd,(255/numberOfVotes)+100, &out_image);
         }
     }
   }
   WriteImage(filename, out_image);
-  */
+  
 }
 double DegToRad(double degrees){
   return degrees*3.1415926535897/180;
