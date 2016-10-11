@@ -619,7 +619,7 @@ void HoughTransform(Image *an_image, const std::string filename, const std::stri
   //samples
   int roeSamples = maxRoe/dp;
   int thetaSamples = maxTheta/dTheta; 
-
+  int maxVotes=0;
 
   //image to write to
   Image out_image;
@@ -638,6 +638,8 @@ void HoughTransform(Image *an_image, const std::string filename, const std::stri
           if(p < maxRoe && p>=0){
             //cout<<"t:"<<t << " p:"<<p<<endl;
             accumulator[round(p)][t]++;
+            if(accumulator[round(p)][t] > maxVotes)
+              maxVotes = accumulator[round(p)][t];
           }
         }
       }
@@ -651,8 +653,8 @@ void HoughTransform(Image *an_image, const std::string filename, const std::stri
   writer.open(output_accumulator);
 
 
-  int threshold =50;
-  int d=30;
+  int threshold =0;
+  int d=40;
   int greyValue;
   cout<<maxTheta << " "<<maxRoe<<endl;
   
@@ -663,13 +665,12 @@ void HoughTransform(Image *an_image, const std::string filename, const std::stri
         
         writer << numberOfVotes << " ";   
 
-        if(numberOfVotes > threshold){
+        if(numberOfVotes >= threshold){
           //cout<<numberOfVotes<<endl;
           //cout<<x<<  " " << y << endl;
-            int xEnd = x + d*cos(DegToRad(x));
-            int yEnd = y + d*sin(DegToRad(x));
-            
-            DrawLine(y,x,yEnd,xEnd,(255/numberOfVotes)+100, &out_image);
+            int value = ((double)accumulator[y][x] / maxVotes )* 255;
+            //cout << value <<endl;
+            out_image.SetPixel(y,x,value);
             
         }
     }
