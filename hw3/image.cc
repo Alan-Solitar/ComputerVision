@@ -14,6 +14,8 @@
 #include "DisjSets.h"
 #include <math.h>
 #include <fstream>
+#include <limits>
+
 
 
 using namespace std;
@@ -305,7 +307,6 @@ DrawLine(int x0, int y0, int x1, int y1, int color,
 
 void LabelImage( Image &an_image) {
 
-
   const double pi = 3.1415926535897;
   int current_label = 0;
   int current_Grey_Scale= 10;
@@ -366,7 +367,6 @@ void LabelImage( Image &an_image) {
             } 
 
       }
-
 
     }
     //second pass through
@@ -528,7 +528,6 @@ void RecognizeObjects(Image &an_image, vector<ComputerVisionProjects::ImageStats
       double theta2 = theta+(pi/2);
       double  maxMoment = a[pValue]*pow(sin(theta2),2) - b[pValue]*sin(theta2)*cos(theta2) + c[pValue]*pow(cos(theta2),2);
      
-   
     //go through objects in db
      for(auto imgStats: imgStatVec)
      {
@@ -547,7 +546,6 @@ void RecognizeObjects(Image &an_image, vector<ComputerVisionProjects::ImageStats
         }
      }
     }
-
 }
 void DetectEdges(const Image &an_image, const string filename) {  
 
@@ -558,7 +556,6 @@ void DetectEdges(const Image &an_image, const string filename) {
   Image out_image;
   out_image.AllocateSpaceAndSetSize(num_rows, num_columns);
   out_image.SetNumberGrayLevels(an_image.num_gray_levels());
-
 
   std::vector<vector<int>> sobelXFilter = {{-1,0,1},{-2,0,2},{-1,0,1}};
   std::vector<vector<int>> sobelYFilter = {{1,2,1},{0,0,0},{-1,-2,-1}};
@@ -576,7 +573,6 @@ void DetectEdges(const Image &an_image, const string filename) {
       int south = (i==num_rows-1)?0:an_image.GetPixel(i+1,j);
       int southEast = (i==num_rows-1||j==num_columns-1)?0:an_image.GetPixel(i+1,j+1); 
 
-
       //x sobel filter
       int x = sobelXFilter[0][0] * northWest + sobelXFilter[0][1] * north +
       sobelXFilter[0][2] * northEast + sobelXFilter[1][0] * west +
@@ -592,11 +588,10 @@ void DetectEdges(const Image &an_image, const string filename) {
       sobelYFilter[2][2] * southEast;
 
       //Not sure whether ceiling or floor is a better choice but I'll go with ceiling
-      //since it seems like I am likely to detect more with using ceiling.
+      //since it seems like I am likely to detect more edges with using ceiling.
       int result  = ceil(sqrt(x*x + y*y));
       out_image.SetPixel(i,j,result);
       
-
     }
   }
   WriteImage(filename, out_image);
@@ -646,13 +641,12 @@ void HoughTransform(Image *an_image, const std::string filename, const std::stri
     }
   }
   
-
   //writer to output accumulator to file
   std::ofstream writer;
   
   writer.open(output_accumulator);
 
-
+  writer << thetaSamples << " " <<roeSamples<<endl;
   int threshold =0;
   int d=40;
   int greyValue;
@@ -671,7 +665,6 @@ void HoughTransform(Image *an_image, const std::string filename, const std::stri
             int value = ((double)accumulator[y][x] / maxVotes )* 255;
             //cout << value <<endl;
             out_image.SetPixel(y,x,value);
-            
         }
     }
     writer <<endl;
@@ -681,7 +674,6 @@ void HoughTransform(Image *an_image, const std::string filename, const std::stri
   //write hough image to file
   WriteImage(filename, out_image);
 
- 
   //OutputAccumulator(accumulator, output_accumulator);
 }
 
@@ -689,13 +681,13 @@ double DegToRad(double degrees){
   return degrees*3.1415926535897/180;
 }
 
-void HoughTransform(Image *an_image, const std::string filename, const std::string output_accumulator, int threshold) {
-/*
+void HoughTransform(Image &an_image, const std::string inputfile, const std::string outputfile, int threshold) {
+
   //constants 
   const double piRadians = 3.1415926535897;
   const double piDegrees = 180;
-  const int num_rows = an_image->num_rows();
-  const int num_columns = an_image->num_columns();
+  const int num_rows = an_image.num_rows();
+  const int num_columns = an_image.num_columns();
   
   //calculate max roe and max theta
   double maxRoe = sqrt(pow(num_rows,2) + pow(num_columns,2));
@@ -707,66 +699,128 @@ void HoughTransform(Image *an_image, const std::string filename, const std::stri
   int roeSamples = maxRoe/dp;
   int thetaSamples = maxTheta/dTheta; 
 
-
-
+  string line="";
   ifstream reader;
-  reader.open(inputdb_file);
+  reader.open(inputfile);
+  std::getline(cin,line);
+  cout <<line;
+ // cin.clear();
+//cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+  //cin >>thetaSamples >> roeSamples;
 
-  string line = "";
-  getline(cin,line);
-  cin >>thetaSamples >> roeSamples;
   vector<vector<int>> accumulator(thetaSamples + 1,vector<int>(roeSamples +1,0));
   for (size_t x = 0; x < maxTheta; ++x) {
     for (size_t y = 0; y < maxRoe; ++y) {
-      cin>> accumulator[x][y] ;
+   
+      //cin>> accumulator[x][y] ;
     }
   }
   reader.close();
   //writer to output accumulator to file
-  
+
+  /*
+  int xCenter = roeSamples/2;
+  int yCenter = thetaSamples/2;
+
   int d=30;
   int greyValue;
   //cout<<maxTheta << " "<<maxRoe<<endl;
-   for (size_t x = 0; x < maxTheta; ++x) {
-    for (size_t y = 0; y < maxRoe; ++y) {
-        int numberOfVotes = accumulator[x][y];
+   for (size_t t = 0; t < maxTheta; ++t) {
+    for (size_t p = 0; p < maxRoe; ++p) {
+        int numberOfVotes = accumulator[p][t];
         if(numberOfVotes > threshold){
-            int xEnd = x + d*cos(DegToRad(x));
-            int yEnd = y + d*sin(DegToRad(x));
-            DrawLine(x,y,xEnd,yEnd,(255/numberOfVotes)+100, &an_image);
+            int xEnd = xCenter + d*cos(DegToRad(t));
+            int yEnd = yCenter + d*sin(DegToRad(t));
+            DrawLine(xCenter,yCenter,xEnd,yEnd,100, &an_image);
         }
     }
-    writer <<endl;
   }
-  writer.close();
-  
   //write hough image to file
-  WriteImage(filename, out_image);
+  WriteImage(outputfile, an_image);
 
-  //OutputAccumulator(accumulator, output_accumulator);
-  */
-}
-
-
-/*
-void OutputAccumulator(const vector<vector<int> > &accumulator, std::string filename){
-  std::ofstream writer;
-  
-  writer.open(filename);
-
-  writer.close();
-
-}
 */
+  //OutputAccumulator(accumulator, output_accumulator);
+}
+/*
+void LabelHoughImage( Image &an_image) {
 
+  
+  int current_label = 0;
+  int current_Grey_Scale= 10;
+  int num_sets=10000;
+  const int num_rows = an_image.num_rows();
+  const int num_columns = an_image.num_columns();
+  const int colors = an_image.num_gray_levels();
+  vector<vector<int>> objectOfPixel(num_rows,vector<int>(num_columns,0));
+  unordered_map<int, int> labels;
 
+  DisjointSets labelSet(num_sets);
+  unordered_map<int,int> colorsMap;
+
+  for (size_t i = 0; i < num_rows; ++i) {
+    for (size_t j = 0; j < num_columns; ++j) {
+        if(an_image.GetPixel(i,j)==0) continue;  
+
+          if(i==0 && j==0) {
+            objectOfPixel[i][j]=++current_label;
+            continue;
+            //labelSet.unionSets(current_label,current_label);
+          } 
+          if(i==0) {
+            objectOfPixel[i][j] = objectOfPixel[i][j-1]!=0?objectOfPixel[i][j-1]:++current_label;
+            continue;
+          } 
+          if(j==0) {
+            objectOfPixel[i][j] = objectOfPixel[i-1][j]!=0?objectOfPixel[i-1][j]:++current_label;
+            continue;
+          } 
+
+            int northWest = objectOfPixel[i-1][j-1];
+            int west = objectOfPixel[i][j-1];
+            int north = objectOfPixel[i-1][j];
+            
+            //check north west neighbor
+            if(northWest!=0) {
+              objectOfPixel[i][j]=northWest; 
+            }
+
+            //check west neighbor
+            else if(west!=0 && north==0) {
+              objectOfPixel[i][j]=west;           
+            }
+
+            //check north neighbor
+            else if(north!=0 && west==0) {
+              objectOfPixel[i][j]=north;
+            } else if(north ==0 && west ==0) {
+              objectOfPixel[i][j]=++current_label;
+              
+            } else {  
+              objectOfPixel[i][j]=north;
+              int x = labelSet.Find(north);
+              int y = labelSet.Find(west);
+              labelSet.UnionSets(x, y);
+            } 
+      }
+    }
+    //second pass through
+    for (size_t i = 0; i < num_rows; ++i) {
+    for (size_t j = 0; j < num_columns; ++j) {
+      if(objectOfPixel[i][j] > 0)
+      {
+        int pixelLabel = labelSet.Find(objectOfPixel[i][j]);
+        int c = colorsMap[pixelLabel];
+        if(c==0)
+        {
+          colorsMap[pixelLabel]=current_Grey_Scale;
+          current_Grey_Scale+=20;
+        }
+        an_image.SetPixel(i,j,colorsMap[pixelLabel]);
+      }
+    }
+  }
+
+  }
+  */
 }  // namespace ComputerVisionProjects
-
-
-
-
-
-
-
-
 
