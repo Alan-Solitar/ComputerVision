@@ -738,7 +738,7 @@ void HoughTransform(Image &an_image, const std::string inputfile, const std::str
     }
   }
   //out_image.ConvertToBinary(threshold);
-  LabelHoughImage(out_image,threshold, accumulator);
+  LabelHoughImage(out_image,an_image,threshold, accumulator, maxVotes);
   cout<<"go"<<endl;
   WriteImage("out.pgm", out_image);
   /*
@@ -764,7 +764,7 @@ void HoughTransform(Image &an_image, const std::string inputfile, const std::str
   */
 }
 
-void LabelHoughImage( Image &an_image, int threshold, const std::vector< vector<int> > &accumulator, int maxVotes) {
+void LabelHoughImage( Image &an_image, Image& image_to_hough_line, int threshold, const std::vector< vector<int> > &accumulator, int maxVotes) {
   
   int current_label = 0;
   int current_Grey_Scale= 10;
