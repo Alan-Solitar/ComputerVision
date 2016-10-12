@@ -650,12 +650,12 @@ void HoughTransform(Image *an_image, const std::string filename, const std::stri
   int threshold =0;
   int d=40;
   int greyValue;
-  cout<<maxTheta << " "<<maxRoe<<endl;
+  cout<<maxTheta << " "<<maxRoe<< " "<<maxVotes<<endl;
   
    for (size_t x = 1; x < maxTheta; ++x) {
     for (size_t y = 1; y < maxRoe; ++y) {
 
-        int numberOfVotes = accumulator[x][y];
+        int numberOfVotes = accumulator[y][x];
         
         writer << numberOfVotes << " ";   
 
@@ -699,30 +699,50 @@ void HoughTransform(Image &an_image, const std::string inputfile, const std::str
   int roeSamples = maxRoe/dp;
   int thetaSamples = maxTheta/dTheta; 
 
-  string line="";
+  int maxVotes=0;
+
+ 
+  cout << inputfile<<endl;
   ifstream reader;
   reader.open(inputfile);
-  std::getline(cin,line);
-  cout <<line;
- // cin.clear();
-//cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-  //cin >>thetaSamples >> roeSamples;
-
-  vector<vector<int>> accumulator(thetaSamples + 1,vector<int>(roeSamples +1,0));
-  for (size_t x = 0; x < maxTheta; ++x) {
-    for (size_t y = 0; y < maxRoe; ++y) {
-   
-      //cin>> accumulator[x][y] ;
+ 
+  reader>>thetaSamples >> roeSamples >> maxVotes;
+    cout <<thetaSamples << " "<<roeSamples<<endl;
+  vector<vector<int>> accumulator(roeSamples + 1,vector<int>(thetaSamples +1,0));
+  for (size_t x = 1; x < maxRoe; ++x) {
+    for (size_t y = 1; y < maxTheta; ++y) {
+      cout << x << " " << y <<endl;
+      reader>> accumulator[x][y] ;
     }
   }
   reader.close();
   //writer to output accumulator to file
 
-  /*
-  int xCenter = roeSamples/2;
-  int yCenter = thetaSamples/2;
+  
+   //image to write to
+  Image out_image;
+  out_image.AllocateSpaceAndSetSize(roeSamples+1, thetaSamples+1);
+  out_image.SetNumberGrayLevels(an_image.num_gray_levels());
 
-  int d=30;
+  //fill up image
+
+  for (size_t x = 1; x < maxRoe; ++x) {
+    for (size_t y = 1; y < maxTheta; ++y) {
+        int numberOfVotes = accumulator[x][y];
+        int value = ((double)accumulator[x][y] / maxVotes )* 255;
+            cout << x << " " << y <<endl;
+            out_image.SetPixel(x,y,value);
+    }
+  }
+  out_image.ConvertToBinary(threshold);
+  LabelImage(out_image);
+  cout<<"go"<<endl;
+  WriteImage("out.pgm", an_image);
+  /*
+  int xCenter = num_rows/2;
+  int yCenter = num_columns/2;
+
+  int d=100;
   int greyValue;
   //cout<<maxTheta << " "<<maxRoe<<endl;
    for (size_t t = 0; t < maxTheta; ++t) {
@@ -737,14 +757,13 @@ void HoughTransform(Image &an_image, const std::string inputfile, const std::str
   }
   //write hough image to file
   WriteImage(outputfile, an_image);
-
-*/
   //OutputAccumulator(accumulator, output_accumulator);
+  */
 }
-/*
-void LabelHoughImage( Image &an_image) {
 
-  
+void LabelHoughImage( Image &an_image, int threshold) {
+
+  /*
   int current_label = 0;
   int current_Grey_Scale= 10;
   int num_sets=10000;
@@ -819,8 +838,8 @@ void LabelHoughImage( Image &an_image) {
       }
     }
   }
-
+*/
   }
-  */
+  
 }  // namespace ComputerVisionProjects
 

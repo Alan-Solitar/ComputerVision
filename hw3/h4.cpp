@@ -18,12 +18,12 @@ int main(int argc, char **argv) {
 	const string output_file(argv[4]);
 
 	Image an_image;
-	/*
+	
 	if (!ReadImage(input_file, &an_image)) {
 		cout << "Can't open file " << input_file << endl;
 		return 0;
 	}
-	*/
+	
 	HoughTransform(an_image, input_file2, output_file, threshold);
 
 	/*
