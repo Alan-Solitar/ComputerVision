@@ -75,7 +75,7 @@ runh2:
 runh3: 	
 		./$(PROGRAM_2) h2output.pgm h3output.pgm votingarray.txt
 runh4: 	
-		./$(PROGRAM_3) hough_simple_1.pgm votingarray.txt 500 h4output.pgm
+		./$(PROGRAM_3) hough_simple_1.pgm votingarray.txt 250 h4output.pgm
 #runp4b: 	
 #		./$(PROGRAM_3) many_objects_2.pgm db.txt p4boutput.pgm
 

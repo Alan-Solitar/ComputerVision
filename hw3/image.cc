@@ -711,7 +711,7 @@ void HoughTransform(Image &an_image, const std::string inputfile, const std::str
   vector<vector<int>> accumulator(roeSamples + 1,vector<int>(thetaSamples +1,0));
   for (size_t x = 1; x < maxRoe; ++x) {
     for (size_t y = 1; y < maxTheta; ++y) {
-      cout << x << " " << y <<endl;
+      //cout << x << " " << y <<endl;
       reader>> accumulator[x][y] ;
     }
   }
@@ -726,18 +726,21 @@ void HoughTransform(Image &an_image, const std::string inputfile, const std::str
 
   //fill up image
 
+  cout<<threshold<<endl;
   for (size_t x = 1; x < maxRoe; ++x) {
     for (size_t y = 1; y < maxTheta; ++y) {
         int numberOfVotes = accumulator[x][y];
+        if(numberOfVotes > threshold){
         int value = ((double)accumulator[x][y] / maxVotes )* 255;
-            cout << x << " " << y <<endl;
-            out_image.SetPixel(x,y,value);
+            //cout << x << " " << y <<endl;
+            out_image.SetPixel(x,y,accumulator[x][y]);
+          }
     }
   }
-  out_image.ConvertToBinary(threshold);
-  LabelImage(out_image);
+  //out_image.ConvertToBinary(threshold);
+  LabelHoughImage(out_image,threshold, accumulator);
   cout<<"go"<<endl;
-  WriteImage("out.pgm", an_image);
+  WriteImage("out.pgm", out_image);
   /*
   int xCenter = num_rows/2;
   int yCenter = num_columns/2;
@@ -761,9 +764,8 @@ void HoughTransform(Image &an_image, const std::string inputfile, const std::str
   */
 }
 
-void LabelHoughImage( Image &an_image, int threshold) {
-
-  /*
+void LabelHoughImage( Image &an_image, int threshold, const std::vector< vector<int> > &accumulator, int maxVotes) {
+  
   int current_label = 0;
   int current_Grey_Scale= 10;
   int num_sets=10000;
@@ -778,7 +780,7 @@ void LabelHoughImage( Image &an_image, int threshold) {
 
   for (size_t i = 0; i < num_rows; ++i) {
     for (size_t j = 0; j < num_columns; ++j) {
-        if(an_image.GetPixel(i,j)==0) continue;  
+        if(an_image.GetPixel(i,j)<threshold) continue;  
 
           if(i==0 && j==0) {
             objectOfPixel[i][j]=++current_label;
@@ -838,8 +840,86 @@ void LabelHoughImage( Image &an_image, int threshold) {
       }
     }
   }
-*/
+
+
+  //calculate centroid
+  unordered_map<int,int> areas;
+  unordered_map<int,int> x,y;
+  //unordered_map<int,float> a, aPrime,b,bPrime,c,cPrime;
+  //const int num_rows = an_image.num_rows();
+  //const int num_columns = an_image.num_columns();
+
+  //go through and calculate values needed for the orientation and centroid
+  for (size_t i = 0; i < num_rows; ++i) {
+    for (size_t j = 0; j < num_columns; ++j) {
+      int pixelValue = an_image.GetPixel(i,j);
+      if(pixelValue > 0) {
+        areas[pixelValue]++;
+        x[pixelValue]+=i*(accumulator[i][j]/maxVotes);
+        y[pixelValue]+=j*(accumulator[i][j]/maxVotes);
+        /*
+        aPrime[pixelValue]+=pow(i,2);
+        bPrime[pixelValue]+=(i*j);
+        cPrime[pixelValue]+=pow(j,2);
+        */
+      }
+    }
   }
+  int label_counter=0;
+  //loop through each object
+  for(auto area:areas)
+    {
+      //write label
+      //writer << ++label_counter<< " ";
+      
+      //Cache values
+      int pValue = area.first;
+      int currentArea = area.second;
+
+      //Centroid calculations
+      double xCenter = (x[pValue])/(double)currentArea;
+      double yCenter = (y[pValue])/(double)currentArea;
+
+      //write centroid valeus
+      //writer << xCenter<< " ";
+     // writer << yCenter<<" ";
+      //writer << currentArea << " ";
+
+      /*
+      //must multiply by 2 for formula
+      bPrime[pValue]*=2;
+
+
+      //calculate values of a, b, c
+      a[pValue] = aPrime[pValue] - pow(xCenter,2)*currentArea;
+      b[pValue] = bPrime[pValue] - 2*xCenter*yCenter*currentArea; 
+      c[pValue] = cPrime[pValue] - pow(yCenter,2)*currentArea;  
+      
+      //theta, min moment, max moment
+      double theta = atan2(b[pValue],a[pValue]-c[pValue]);
+      double minMoment = a[pValue]*pow(sin(theta),2) - b[pValue]*sin(theta)*cos(theta) + c[pValue]*pow(cos(theta),2);
+      double theta2 = theta+(pi/2);
+      double  maxMoment = a[pValue]*pow(sin(theta2),2) - b[pValue]*sin(theta2)*cos(theta2) + c[pValue]*pow(cos(theta2),2);
+     // writer <<theta <<" ";
+     // writer <<minMoment <<" ";
+      //writer <<maxMoment<<" ";
+*/
+      //writer << endl;
+      //writer << "\n";
+     // int d=30;
+     // int xEnd = xCenter + d*cos(theta);
+      //int yEnd = yCenter + d*sin(theta);
+
+      //draw line and dots
+      //DrawLine(xCenter,yCenter,xEnd,yEnd,100, &an_image);
+      //DrawDot(an_image,xCenter,yCenter);
+    }
+  
+    //writer.close();
+
+  }
+
+
   
 }  // namespace ComputerVisionProjects
 
