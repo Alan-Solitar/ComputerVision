@@ -919,15 +919,15 @@ void LabelHoughImage( Image &an_image, Image& image_to_hough_line, int threshold
           yStart = rCenter/sin(DegToRad(tCenter));
 
           //set x to width;
-          xEnd = num_columns -2;
+          xEnd = num_rows -2;
           yEnd = (rCenter - xEnd*cos(DegToRad(tCenter))) /sin(DegToRad(tCenter));
           cout << num_columns << " "<<num_columns1<<endl;
           cout <<xStart << ","<<yStart << " "<<xEnd <<","<<yEnd<<endl;
-          if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 && xStart <num_columns1 
-             
-            && yStart < num_rows && xEnd <num_columns 
-            
-            && yEnd < num_rows )
+          if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 &&  
+            xStart < num_rows&& 
+            yStart <num_columns && 
+            xEnd < num_rows && 
+            yEnd <num_columns )
                 DrawLine(xStart,yStart,xEnd,yEnd,200, &image_to_hough_line);
    
       }
@@ -935,16 +935,15 @@ void LabelHoughImage( Image &an_image, Image& image_to_hough_line, int threshold
           int xStart,xEnd,yStart,yEnd;
           yStart=0;
           xStart = (rCenter - yStart*sin(DegToRad(tCenter))) /cos(DegToRad(tCenter)); 
-          yEnd = num_rows -2;
+          yEnd = num_columns -2;
           xEnd = (rCenter - yEnd*sin(DegToRad(tCenter))) /cos(DegToRad(tCenter));
           cout<<"horizontal"<<endl;
           cout <<xStart << ","<<yStart << " "<<xEnd <<","<<yEnd<<endl;
-          if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 && xStart <num_columns 
-             
-              && yStart < num_rows && xEnd <num_columns
-              
-              && yEnd < num_rows )
-                int a =100;
+          if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 
+                    && xStart < num_rows 
+                    && yStart < num_columns 
+                    && xEnd < num_rows  
+                    && yEnd < num_columns )
               DrawLine(abs(xStart),abs(yStart),abs(xEnd),abs(yEnd),200, &an_image);
 
       }
@@ -957,7 +956,8 @@ void FindLines( Image &an_image, int threshold, const std::vector< vector<int> >
   bool isMax=true;
   const int num_rows = an_image.num_rows();
   const int num_columns = an_image.num_columns();
-
+  int max_length=3;
+  int min_length=-3;
     cout << roeSamples << " " << thetaSamples<<endl;
     for (size_t r = 0; r < roeSamples; ++r) {
     for (size_t t = 0; t < thetaSamples; ++t) {
@@ -965,14 +965,14 @@ void FindLines( Image &an_image, int threshold, const std::vector< vector<int> >
               isMax=true;
             int max  = accumulator[r][t];
 
-            for(int i = -5;i<=5;++i){
-                for(int j = -5;j<=5;++j){
+            for(int i = min_length;i<=max_length;++i){
+                for(int j=min_length;j<=max_length;++j){
                     //we need to check to make sure we are in bounds
                     if( i + r >=0 && i+r < num_rows && j + t >=0 && j + t <num_columns){
                       //cout << i+r << " "<<j+t<<endl;
                       if( accumulator[i+r][j+t] > max){
                         //not a local maximum
-                        i=j=5;
+                        i=j=max_length;
                         isMax=false;
                       }
                     }
@@ -990,9 +990,10 @@ void FindLines( Image &an_image, int threshold, const std::vector< vector<int> >
                   yEnd = (r - xEnd*cos(DegToRad(t))) /sin(DegToRad(t));
                   //cout <<xStart <<" " << yStart << " "<<xEnd << " "<<yEnd<<endl;
                   if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 &&  
-         xStart < num_rows && yStart <num_columns   
-        && xEnd < num_rows && yEnd <num_columns 
-          ){
+                  xStart < num_rows && 
+                  yStart <num_columns && 
+                  xEnd < num_rows && 
+                  yEnd <num_columns ){
                     //cout<<"vertical"<<endl;
 
                    DrawLine(abs(xStart),abs(yStart),abs(xEnd),abs(yEnd),200, &an_image);
@@ -1004,13 +1005,11 @@ void FindLines( Image &an_image, int threshold, const std::vector< vector<int> >
 
                   yEnd = num_columns -2;
                   xEnd = (r - yEnd*sin(DegToRad(t))) /cos(DegToRad(t));
-                  //cout <<xStart <<" " << yStart << " "<<xEnd << " "<<yEnd<<endl;
                   if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 
                     && xStart < num_rows 
                     && yStart < num_columns 
                     && xEnd < num_rows  
                     && yEnd < num_columns ){
-                    //cout<<"vertical"<<endl;
                   DrawLine(abs(xStart),abs(yStart),abs(xEnd),abs(yEnd),200, &an_image);
               }
 

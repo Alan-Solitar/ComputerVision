@@ -72,11 +72,11 @@ all:
 runh1: 	
 		./$(PROGRAM_0) hough_simple_1.pgm h1output.pgm
 runh2: 	
-		./$(PROGRAM_1) h1output.pgm 30 h2output.pgm
+		./$(PROGRAM_1) h1output.pgm 18 h2output.pgm
 runh3: 	
 		./$(PROGRAM_2) h2output.pgm h3output.pgm votingarray.txt
 runh4a: 	
-		./$(PROGRAM_3) 1 hough_simple_1.pgm votingarray.txt 300 h4output.pgm
+		./$(PROGRAM_3) 1 hough_simple_1.pgm votingarray.txt 350 h4output.pgm
 runh4b: 	
 		./$(PROGRAM_3) 0 hough_simple_1.pgm votingarray.txt 300 h4output.pgm
 
