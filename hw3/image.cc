@@ -926,7 +926,29 @@ void LabelHoughImage( Image &an_image, Image& image_to_hough_line, int threshold
 WriteImage("out.pgm" , image_to_hough_line);
   }
 
+void FindLines( Image &an_image, int threshold, const std::vector< vector<int> > &accumulator){
+    for (size_t r = 0; r < num_rows; ++r) {
+    for (size_t t = 0; t < num_columns; ++t) {
+        if(accumulator[r][t] > threshold){
+            for(int i = -5;i<=5;++i){
+                for(int j = -5;j<=5;++j){
 
+                    //we need to check to make sure we are in bounds
+                    if( i + r >=0 && i+r < num_rows && j + t >=0 && j + t <num_columns){
+
+                      if( accumulator[i+r][j+t] > max)
+
+                    }
+
+                }
+
+            }
+        }
+    }
+  }
+
+
+}
   
 }  // namespace ComputerVisionProjects
 
