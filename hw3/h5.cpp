@@ -8,16 +8,14 @@ using namespace ComputerVisionProjects;
 
 int main(int argc, char **argv) {
 
-	if (argc != 6) {
-		printf("Usage: %s flag file1 file2 threshold file 3 \n", argv[0]);
+	if (argc != 5) {
+		printf("Usage: %s file1 file2 threshold file 3\n", argv[0]);
 		return 0;
 	}
-	const int flag(stoi(argv[1]));
-	const string input_file(argv[2]);
-	const string input_file2(argv[3]);
-	const int threshold(stoi(argv[4]));
-	const string output_file(argv[5]);
-	
+	const string input_file(argv[1]);
+	const string input_file2(argv[2]);
+	const int threshold(stoi(argv[3]));
+	const string output_file(argv[4]);
 
 	Image an_image;
 	
@@ -26,13 +24,7 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 	
-	cout << flag  <<endl;
-	if(flag==1)
-			HoughTransform(true, an_image, input_file2, output_file, threshold);
-	else{
-			HoughTransform(false, an_image, input_file2, output_file, threshold);
-
-	}
+	HoughTransform(false, an_image, input_file2, output_file, threshold);
 
 	
 	/*

@@ -678,7 +678,7 @@ double DegToRad(double degrees){
   return degrees*3.1415926535897/180;
 }
 
-void HoughTransform(Image &an_image, const std::string inputfile, const std::string outputfile, int threshold) {
+void HoughTransform(bool localMax , Image &an_image, const std::string inputfile, const std::string outputfile, int threshold) {
 
   //constants 
   const double piRadians = 3.1415926535897;
@@ -699,12 +699,12 @@ void HoughTransform(Image &an_image, const std::string inputfile, const std::str
   int maxVotes=0;
 
  
-  cout << inputfile<<endl;
+  //cout << inputfile<<endl;
   ifstream reader;
   reader.open(inputfile);
  
   reader>>thetaSamples >> roeSamples >> maxVotes;
-    cout <<thetaSamples << " "<<roeSamples<<endl;
+    //cout <<thetaSamples << " "<<roeSamples<<endl;
   vector<vector<int>> accumulator(roeSamples + 1,vector<int>(thetaSamples +1,0));
   for (size_t x = 1; x < maxRoe; ++x) {
     for (size_t y = 1; y < maxTheta; ++y) {
@@ -713,34 +713,44 @@ void HoughTransform(Image &an_image, const std::string inputfile, const std::str
     }
   }
   reader.close();
-  //writer to output accumulator to file
+
+  if(localMax){
+    FindLines(an_image, threshold, accumulator, thetaSamples, roeSamples);
+    cout<<"go"<<endl;
+    WriteImage(outputfile, an_image);
+  }
+
+  else {
+      //image to write to
+      Image out_image;
+      out_image.AllocateSpaceAndSetSize(roeSamples+1, thetaSamples+1);
+      out_image.SetNumberGrayLevels(an_image.num_gray_levels());
+
+        //fill up image
+      cout<<threshold<<endl;
+      for (size_t x = 1; x < maxRoe; ++x) {
+        for (size_t y = 1; y < maxTheta; ++y) {
+            int numberOfVotes = accumulator[x][y];
+            if(numberOfVotes > threshold){
+              int value = ((double)accumulator[x][y] / maxVotes )* 255;
+              //cout << x << " " << y <<endl;
+              out_image.SetPixel(x,y,accumulator[x][y]);
+            }
+        }
+      }
+      //out_image.ConvertToBinary(threshold);
+      LabelHoughImage(out_image,an_image,threshold, accumulator, maxVotes);
+
+
+  }
+  
 
   
-   //image to write to
-  //Image out_image;
- // out_image.AllocateSpaceAndSetSize(roeSamples+1, thetaSamples+1);
- // out_image.SetNumberGrayLevels(an_image.num_gray_levels());
 
-  //fill up image
 
-  /*
-  cout<<threshold<<endl;
-  for (size_t x = 1; x < maxRoe; ++x) {
-    for (size_t y = 1; y < maxTheta; ++y) {
-        int numberOfVotes = accumulator[x][y];
-        if(numberOfVotes > threshold){
-          int value = ((double)accumulator[x][y] / maxVotes )* 255;
-          //cout << x << " " << y <<endl;
-          out_image.SetPixel(x,y,accumulator[x][y]);
-          }
-    }
-  }
-  */
-  //out_image.ConvertToBinary(threshold);
-  //LabelHoughImage(out_image,an_image,threshold, accumulator, maxVotes);
-  FindLines(an_image, threshold, accumulator, thetaSamples, roeSamples);
-  cout<<"go"<<endl;
-  WriteImage(outputfile, an_image);
+
+  
+
   /*
   int xCenter = num_rows/2;
   int yCenter = num_columns/2;
@@ -888,8 +898,7 @@ void LabelHoughImage( Image &an_image, Image& image_to_hough_line, int threshold
   
   int label_counter=0;
   //loop through each object
-  for(auto area:areas)
-    {
+  for(auto area:areas) {
       //write label
       //writer << ++label_counter<< " ";
       
@@ -901,29 +910,47 @@ void LabelHoughImage( Image &an_image, Image& image_to_hough_line, int threshold
       double rCenter = (x[pValue])/(double)currentArea;
       double tCenter = (y[pValue])/(double)currentArea;
 
-      //cout << x[pValue]<< " " << y[pValue] << " "<<currentArea;
-     //cout << rCenter << " "<<tCenter<<endl;
-      int xStart,xEnd,yStart,yEnd;
-      //rCenter = x*cos(tCenter) + y*sin(tCenter)
-      //set x to 0
-      xStart=0;
-      yStart = rCenter/sin(DegToRad(tCenter));
+  
+      if(tCenter> 45 && tCenter<=135){
+          int xStart,xEnd,yStart,yEnd;
+     
+          //set x to 0
+          xStart=0;
+          yStart = rCenter/sin(DegToRad(tCenter));
 
-      //set x to width;
-      xEnd = num_rows1 -1;
-      yEnd = (rCenter - xEnd*cos(DegToRad(tCenter))) /sin(DegToRad(tCenter));
-      //cout << num_rows1 << " "<<num_columns1<<endl;
-      cout <<xStart << ","<<yStart << " "<<xEnd <<","<<yEnd<<endl;
-      if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 && xStart <num_columns1 
-        && xStart < num_rows1 && yStart <num_columns1 
-        && yStart < num_rows1 && xEnd <num_columns1 
-        && xEnd < num_rows1 && yEnd <num_columns1 
-        && yEnd < num_rows1 )
-      DrawLine(xStart,yStart,xEnd,yEnd,200, &image_to_hough_line);
+          //set x to width;
+          xEnd = num_columns -2;
+          yEnd = (rCenter - xEnd*cos(DegToRad(tCenter))) /sin(DegToRad(tCenter));
+          cout << num_columns << " "<<num_columns1<<endl;
+          cout <<xStart << ","<<yStart << " "<<xEnd <<","<<yEnd<<endl;
+          if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 && xStart <num_columns1 
+             
+            && yStart < num_rows && xEnd <num_columns 
+            
+            && yEnd < num_rows )
+                DrawLine(xStart,yStart,xEnd,yEnd,200, &image_to_hough_line);
    
-    }
+      }
+      else{
+          int xStart,xEnd,yStart,yEnd;
+          yStart=0;
+          xStart = (rCenter - yStart*sin(DegToRad(tCenter))) /cos(DegToRad(tCenter)); 
+          yEnd = num_rows -2;
+          xEnd = (rCenter - yEnd*sin(DegToRad(tCenter))) /cos(DegToRad(tCenter));
+          cout<<"horizontal"<<endl;
+          cout <<xStart << ","<<yStart << " "<<xEnd <<","<<yEnd<<endl;
+          if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 && xStart <num_columns 
+             
+              && yStart < num_rows && xEnd <num_columns
+              
+              && yEnd < num_rows )
+                int a =100;
+              DrawLine(abs(xStart),abs(yStart),abs(xEnd),abs(yEnd),200, &an_image);
+
+      }
+  }
     cout << "writing"<<endl;
-WriteImage("out.pgm" , image_to_hough_line);
+    WriteImage("out.pgm" , image_to_hough_line);
   }
 
 void FindLines( Image &an_image, int threshold, const std::vector< vector<int> > &accumulator, int thetaSamples, int roeSamples){
@@ -959,15 +986,14 @@ void FindLines( Image &an_image, int threshold, const std::vector< vector<int> >
                   xStart=0;
                   yStart = (r - xStart*cos(DegToRad(t))) /sin(DegToRad(t));
 
-                  xEnd = num_rows -1;
+                  xEnd = num_rows -2;
                   yEnd = (r - xEnd*cos(DegToRad(t))) /sin(DegToRad(t));
-                  cout <<xStart <<" " << yStart << " "<<xEnd << " "<<yEnd<<endl;
-                  if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 && xStart <num_columns 
-        && xStart < num_rows && yStart <num_columns 
-        && yStart < num_rows && xEnd <num_columns 
+                  //cout <<xStart <<" " << yStart << " "<<xEnd << " "<<yEnd<<endl;
+                  if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 &&  
+         xStart < num_rows && yStart <num_columns   
         && xEnd < num_rows && yEnd <num_columns 
-        && yEnd < num_rows ){
-                    cout<<"vertical"<<endl;
+          ){
+                    //cout<<"vertical"<<endl;
 
                    DrawLine(abs(xStart),abs(yStart),abs(xEnd),abs(yEnd),200, &an_image);
                }
@@ -976,15 +1002,15 @@ void FindLines( Image &an_image, int threshold, const std::vector< vector<int> >
                   yStart=0;
                   xStart = (r - yStart*sin(DegToRad(t))) /cos(DegToRad(t)); 
 
-                  yEnd = num_rows -1;
+                  yEnd = num_columns -2;
                   xEnd = (r - yEnd*sin(DegToRad(t))) /cos(DegToRad(t));
-                  cout <<xStart <<" " << yStart << " "<<xEnd << " "<<yEnd<<endl;
-                  if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 && xStart <num_columns 
-                    && xStart < num_rows && yStart <num_columns 
-                    && yStart < num_rows && xEnd <num_columns
-                    && xEnd < num_rows && yEnd <num_columns
-                    && yEnd < num_rows ){
-                    cout<<"vertical"<<endl;
+                  //cout <<xStart <<" " << yStart << " "<<xEnd << " "<<yEnd<<endl;
+                  if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 
+                    && xStart < num_rows 
+                    && yStart < num_columns 
+                    && xEnd < num_rows  
+                    && yEnd < num_columns ){
+                    //cout<<"vertical"<<endl;
                   DrawLine(abs(xStart),abs(yStart),abs(xEnd),abs(yEnd),200, &an_image);
               }
 

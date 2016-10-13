@@ -41,7 +41,7 @@ $(PROGRAM_0): $(ALL_OBJ0)
 
 #Program 1
 ALL_OBJ1=image.o h2.o
-PROGRAM_1=p2
+PROGRAM_1=h2
 
 $(PROGRAM_1): $(ALL_OBJ1)
 	g++ $(C++FLAG) -o $(EXEC_DIR)/$@ $(ALL_OBJ1) $(INCLUDES) $(LIBS_ALL)
@@ -60,6 +60,7 @@ PROGRAM_3=h4
 $(PROGRAM_3): $(ALL_OBJ3)
 	g++ $(C++FLAG) -o $(EXEC_DIR)/$@ $(ALL_OBJ3) $(INCLUDES) $(LIBS_ALL)
 
+
 all:
 	make $(PROGRAM_0)
 	make $(PROGRAM_1)
@@ -74,10 +75,10 @@ runh2:
 		./$(PROGRAM_1) h1output.pgm 30 h2output.pgm
 runh3: 	
 		./$(PROGRAM_2) h2output.pgm h3output.pgm votingarray.txt
-runh4: 	
-		./$(PROGRAM_3) hough_simple_1.pgm votingarray.txt 300 h4output.pgm
-#runp4b: 	
-#		./$(PROGRAM_3) many_objects_2.pgm db.txt p4boutput.pgm
+runh4a: 	
+		./$(PROGRAM_3) 1 hough_simple_1.pgm votingarray.txt 300 h4output.pgm
+runh4b: 	
+		./$(PROGRAM_3) 0 hough_simple_1.pgm votingarray.txt 300 h4output.pgm
 
 
 

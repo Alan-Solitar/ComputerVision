@@ -101,7 +101,7 @@ void DrawDot(Image &an_image, int x, int y);
 void RecognizeObjects(Image &an_image, std::vector<ComputerVisionProjects::ImageStats>);
 void DetectEdges(const Image &an_image, const std::string filename);
 void HoughTransform(Image *an_image, const std::string filename, const std::string output_accumulator);
-void HoughTransform(Image &an_image, const std::string inputfile, const std::string outputfile, int threshold);
+void HoughTransform(bool localMax, Image &an_image, const std::string inputfile, const std::string outputfile, int threshold);
 double DegToRad(double degrees);
 void LabelHoughImage(Image &an_image, Image& image_to_hough_line, int threshold, const std::vector<std::vector<int>> &accumulator, int maxVotes);
 void FindLines( Image &an_image, int threshold, const std::vector< std::vector<int> > &accumulator, int thetaSamples, int roeSamples);
