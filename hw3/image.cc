@@ -720,12 +720,13 @@ void HoughTransform(Image &an_image, const std::string inputfile, const std::str
 
   
    //image to write to
-  Image out_image;
-  out_image.AllocateSpaceAndSetSize(roeSamples+1, thetaSamples+1);
-  out_image.SetNumberGrayLevels(an_image.num_gray_levels());
+  //Image out_image;
+ // out_image.AllocateSpaceAndSetSize(roeSamples+1, thetaSamples+1);
+ // out_image.SetNumberGrayLevels(an_image.num_gray_levels());
 
   //fill up image
 
+  /*
   cout<<threshold<<endl;
   for (size_t x = 1; x < maxRoe; ++x) {
     for (size_t y = 1; y < maxTheta; ++y) {
@@ -737,8 +738,10 @@ void HoughTransform(Image &an_image, const std::string inputfile, const std::str
           }
     }
   }
+  */
   //out_image.ConvertToBinary(threshold);
-  LabelHoughImage(out_image,an_image,threshold, accumulator, maxVotes);
+  //LabelHoughImage(out_image,an_image,threshold, accumulator, maxVotes);
+  FindLines(an_image, threshold, accumulator, thetaSamples, roeSamples);
   cout<<"go"<<endl;
   WriteImage(outputfile, an_image);
   /*
@@ -926,18 +929,23 @@ void LabelHoughImage( Image &an_image, Image& image_to_hough_line, int threshold
 WriteImage("out.pgm" , image_to_hough_line);
   }
 
-void FindLines( Image &an_image, int threshold, const std::vector< vector<int> > &accumulator){
-  int isMax=true;
-    for (size_t r = 0; r < num_rows; ++r) {
-    for (size_t t = 0; t < num_columns; ++t) {
+void FindLines( Image &an_image, int threshold, const std::vector< vector<int> > &accumulator, int thetaSamples, int roeSamples){
+  bool isMax=true;
+  const int num_rows = an_image.num_rows();
+  const int num_columns = an_image.num_columns();
+
+    cout << roeSamples << " " << thetaSamples<<endl;
+    for (size_t r = 0; r < roeSamples; ++r) {
+    for (size_t t = 0; t < thetaSamples; ++t) {
         if(accumulator[r][t] > threshold){
+              isMax=true;
             int max  = accumulator[r][t];
 
             for(int i = -5;i<=5;++i){
                 for(int j = -5;j<=5;++j){
                     //we need to check to make sure we are in bounds
                     if( i + r >=0 && i+r < num_rows && j + t >=0 && j + t <num_columns){
-
+                      //cout << i+r << " "<<j+t<<endl;
                       if( accumulator[i+r][j+t] > max){
                         //not a local maximum
                         i=j=5;
@@ -952,21 +960,23 @@ void FindLines( Image &an_image, int threshold, const std::vector< vector<int> >
 
               if(t > 45 && t<=135){
                   xStart=0;
-                  yStart = (r - xStart*cos(DegToRad(t))) /sin(DegToRad(t));
+                  yStart = (r - roeSamples/2  - (xStart -num_columns/2) *cos(DegToRad(t))) /sin(DegToRad(t)) + num_rows/2;
 
-                  xEnd = num_rows1 -1;
-                  yEnd = (r - xEnd*cos(DegToRad(t))) /sin(DegToRad(t));
-                  DrawLine(xStart,yStart,xEnd,yEnd,200, &an_image);
+                  xEnd = thetaSamples -1;
+                  yEnd = (r -roeSamples/2  - (xEnd - num_columns/2)*cos(DegToRad(t))) /sin(DegToRad(t)) + num_rows/2;
+                  cout <<xStart <<" " << yStart << " "<<xEnd << " "<<yEnd<<endl;
+                  DrawLine(abs(xStart),abs(yStart),abs(xEnd),abs(yEnd),200, &an_image);
               }
               else {
                   yStart=0;
-                  xStart = (r - yStart*sin(DegToRad(t))) /cos(DegToRad(t)); 
+                  xStart = (r - roeSamples/2 - (yStart - num_rows/2)*sin(DegToRad(t))) /cos(DegToRad(t)) + num_columns/2; 
 
-                  yEnd = num_columns1 -1;
-                  xEnd = (r - yEnd*sin(DegToRad(t))) /cos(DegToRad(t));
-                  DrawLine(xStart,yStart,xEnd,yEnd,200, &an_image);
+                  yEnd = roeSamples -1;
+                  xEnd = (r - roeSamples/2  - (yEnd -  num_rows/2)*sin(DegToRad(t))) /cos(DegToRad(t)) + num_columns/2;
+                  cout <<xStart <<" " << yStart << " "<<xEnd << " "<<yEnd<<endl;
+                  DrawLine(abs(xStart),abs(yStart),abs(xEnd),abs(yEnd),200, &an_image);
+
               }
-
 
             }
         }
