@@ -69,16 +69,30 @@ all:
 
 
 
-runh1: 	
-		./$(PROGRAM_0) hough_simple_1.pgm h1output.pgm
-runh2: 	
-		./$(PROGRAM_1) h1output.pgm 18 h2output.pgm
-runh3: 	
-		./$(PROGRAM_2) h2output.pgm h3output.pgm votingarray.txt
+runh1a: 	
+		./$(PROGRAM_0) hough_simple_1.pgm h1outputa.pgm
+runh1b: 	
+		./$(PROGRAM_0) hough_simple_2.pgm h1outputb.pgm
+runh1c: 	
+		./$(PROGRAM_0) hough_complex_1.pgm h1outputc.pgm
+runh2a: 	
+		./$(PROGRAM_1) h1outputa.pgm 30 h2outputa.pgm
+runh2b: 	
+		./$(PROGRAM_1) h1outputb.pgm 18 h2outputb.pgm
+runh2c: 	
+		./$(PROGRAM_1) h1outputc.pgm 10 h2outputc.pgm
+runh3a: 	
+		./$(PROGRAM_2) h2outputa.pgm h3outputa.pgm votingarraya.txt
+runh3b: 	
+		./$(PROGRAM_2) h2outputb.pgm h3outputb.pgm votingarrayb.txt
+runh3c: 	
+		./$(PROGRAM_2) h2outputc.pgm h3outputc.pgm votingarrayc.txt
 runh4a: 	
-		./$(PROGRAM_3) 1 hough_simple_1.pgm votingarray.txt 350 h4output.pgm
+		./$(PROGRAM_3) 1 hough_simple_1.pgm votingarraya.txt 350 h4outputa.pgm
 runh4b: 	
-		./$(PROGRAM_3) 0 hough_simple_1.pgm votingarray.txt 300 h4output.pgm
+		./$(PROGRAM_3) 1 hough_simple_2.pgm votingarrayb.txt 200 h4outputb.pgm
+runh4c: 	
+		./$(PROGRAM_3) 1 hough_complex_1.pgm votingarrayc.txt 350 h4outputc.pgm
 
 
 

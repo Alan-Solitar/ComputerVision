@@ -944,7 +944,7 @@ void LabelHoughImage( Image &an_image, Image& image_to_hough_line, int threshold
                     && yStart < num_columns 
                     && xEnd < num_rows  
                     && yEnd < num_columns )
-              DrawLine(abs(xStart),abs(yStart),abs(xEnd),abs(yEnd),200, &an_image);
+              DrawLine(xStart,yStart,xEnd,yEnd,200, &an_image);
 
       }
   }
@@ -996,7 +996,7 @@ void FindLines( Image &an_image, int threshold, const std::vector< vector<int> >
                   yEnd <num_columns ){
                     //cout<<"vertical"<<endl;
 
-                   DrawLine(abs(xStart),abs(yStart),abs(xEnd),abs(yEnd),200, &an_image);
+                   DrawLine(xStart,yStart,xEnd,yEnd,200, &an_image);
                }
               }
               else {
@@ -1010,7 +1010,7 @@ void FindLines( Image &an_image, int threshold, const std::vector< vector<int> >
                     && yStart < num_columns 
                     && xEnd < num_rows  
                     && yEnd < num_columns ){
-                  DrawLine(abs(xStart),abs(yStart),abs(xEnd),abs(yEnd),200, &an_image);
+                  DrawLine(xStart,yStart,xEnd,yEnd,200, &an_image);
               }
 
               }
