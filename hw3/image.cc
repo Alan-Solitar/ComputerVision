@@ -927,20 +927,46 @@ WriteImage("out.pgm" , image_to_hough_line);
   }
 
 void FindLines( Image &an_image, int threshold, const std::vector< vector<int> > &accumulator){
+  int isMax=true;
     for (size_t r = 0; r < num_rows; ++r) {
     for (size_t t = 0; t < num_columns; ++t) {
         if(accumulator[r][t] > threshold){
+            int max  = accumulator[r][t];
+
             for(int i = -5;i<=5;++i){
                 for(int j = -5;j<=5;++j){
-
                     //we need to check to make sure we are in bounds
                     if( i + r >=0 && i+r < num_rows && j + t >=0 && j + t <num_columns){
 
-                      if( accumulator[i+r][j+t] > max)
-
+                      if( accumulator[i+r][j+t] > max){
+                        //not a local maximum
+                        i=j=5;
+                        isMax=false;
+                      }
                     }
-
                 }
+            }
+            if(isMax){
+            //point calculations
+              int xStart,xEnd,yStart,yEnd;
+
+              if(t > 45 && t<=135){
+                  xStart=0;
+                  yStart = (r - xStart*cos(DegToRad(t))) /sin(DegToRad(t));
+
+                  xEnd = num_rows1 -1;
+                  yEnd = (r - xEnd*cos(DegToRad(t))) /sin(DegToRad(t));
+                  DrawLine(xStart,yStart,xEnd,yEnd,200, &an_image);
+              }
+              else {
+                  yStart=0;
+                  xStart = (r - yStart*sin(DegToRad(t))) /cos(DegToRad(t)); 
+
+                  yEnd = num_columns1 -1;
+                  xEnd = (r - yEnd*sin(DegToRad(t))) /cos(DegToRad(t));
+                  DrawLine(xStart,yStart,xEnd,yEnd,200, &an_image);
+              }
+
 
             }
         }
