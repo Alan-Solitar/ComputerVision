@@ -652,19 +652,16 @@ void HoughTransform(Image *an_image, const std::string filename, const std::stri
   int greyValue;
   cout<<maxTheta << " "<<maxRoe<< " "<<maxVotes<<endl;
   
-   for (size_t x = 1; x < maxTheta; ++x) {
-    for (size_t y = 1; y < maxRoe; ++y) {
+   for (size_t x = 1; x < maxRoe; ++x) {
+    for (size_t y = 1; y < maxTheta; ++y) {
 
-        int numberOfVotes = accumulator[y][x];
+        int numberOfVotes = accumulator[x][y];
         
         writer << numberOfVotes << " ";   
 
         if(numberOfVotes >= threshold){
-          //cout<<numberOfVotes<<endl;
-          //cout<<x<<  " " << y << endl;
-            int value = ((double)accumulator[y][x] / maxVotes )* 255;
-            //cout << value <<endl;
-            out_image.SetPixel(y,x,value);
+            int value = ((double)numberOfVotes / maxVotes )* 255;
+            out_image.SetPixel(x,y,value);
         }
     }
     writer <<endl;
@@ -960,21 +957,36 @@ void FindLines( Image &an_image, int threshold, const std::vector< vector<int> >
 
               if(t > 45 && t<=135){
                   xStart=0;
-                  yStart = (r - roeSamples/2  - (xStart -num_columns/2) *cos(DegToRad(t))) /sin(DegToRad(t)) + num_rows/2;
+                  yStart = (r - xStart*cos(DegToRad(t))) /sin(DegToRad(t));
 
-                  xEnd = thetaSamples -1;
-                  yEnd = (r -roeSamples/2  - (xEnd - num_columns/2)*cos(DegToRad(t))) /sin(DegToRad(t)) + num_rows/2;
+                  xEnd = num_rows -1;
+                  yEnd = (r - xEnd*cos(DegToRad(t))) /sin(DegToRad(t));
                   cout <<xStart <<" " << yStart << " "<<xEnd << " "<<yEnd<<endl;
-                  DrawLine(abs(xStart),abs(yStart),abs(xEnd),abs(yEnd),200, &an_image);
+                  if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 && xStart <num_columns 
+        && xStart < num_rows && yStart <num_columns 
+        && yStart < num_rows && xEnd <num_columns 
+        && xEnd < num_rows && yEnd <num_columns 
+        && yEnd < num_rows ){
+                    cout<<"vertical"<<endl;
+
+                   DrawLine(abs(xStart),abs(yStart),abs(xEnd),abs(yEnd),200, &an_image);
+               }
               }
               else {
                   yStart=0;
-                  xStart = (r - roeSamples/2 - (yStart - num_rows/2)*sin(DegToRad(t))) /cos(DegToRad(t)) + num_columns/2; 
+                  xStart = (r - yStart*sin(DegToRad(t))) /cos(DegToRad(t)); 
 
-                  yEnd = roeSamples -1;
-                  xEnd = (r - roeSamples/2  - (yEnd -  num_rows/2)*sin(DegToRad(t))) /cos(DegToRad(t)) + num_columns/2;
+                  yEnd = num_rows -1;
+                  xEnd = (r - yEnd*sin(DegToRad(t))) /cos(DegToRad(t));
                   cout <<xStart <<" " << yStart << " "<<xEnd << " "<<yEnd<<endl;
+                  if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 && xStart <num_columns 
+                    && xStart < num_rows && yStart <num_columns 
+                    && yStart < num_rows && xEnd <num_columns
+                    && xEnd < num_rows && yEnd <num_columns
+                    && yEnd < num_rows ){
+                    cout<<"vertical"<<endl;
                   DrawLine(abs(xStart),abs(yStart),abs(xEnd),abs(yEnd),200, &an_image);
+              }
 
               }
 
