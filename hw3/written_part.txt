@@ -1,0 +1,34 @@
+//Alan Solitar
+
+prob 1.
+I= I(x)
+n = n(x) = εsin(ωx)
+I = I(x) + n(x)
+I = I(x) + εsin(ωx)
+
+I' = I'(x) + (ω)εcos(ωx)
+
+I' = I'(x) + ωεcos(ωx)
+
+I'(x) vs I'(x) + ωεcos(ωx)
+
+This shows that depending on the value of ω, the noise can cause a very significant change to the value of the signal.
+
+
+prob 2. 
+
+//not so sure about the solution but I tried to play
+around the equation a bit
+
+Equation of Line:
+xcosθ+ ysinθ = ρ
+
+you can make some substituations and get an equation in terms of sin
+
+cosθ = adj/hyp = x/ρ
+
+x^2ρ + ysinθ
+
+In this case y should be the amplitude and i believe the phase should be affected by some multiple of x
+
+I believe that the period of all these sinusoids should be the same, meaning 2π. So it does not change regardless of x,y.

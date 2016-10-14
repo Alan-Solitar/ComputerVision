@@ -1,3 +1,5 @@
+//Writen by Alan Solitar
+
 #include "image.h"
 #include <cstdio>
 #include <iostream>

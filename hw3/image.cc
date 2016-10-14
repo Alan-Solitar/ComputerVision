@@ -3,6 +3,9 @@
 // with support for reading/writing pgm images.
 // To be used in Computer Vision class.
 
+
+//Functionality added on by Alan Solitar
+
 #include "image.h"
 #include <iostream>
 #include <string>
