@@ -629,9 +629,7 @@ void HoughTransform(Image *an_image, const std::string filename, const std::stri
       if(an_image->GetPixel(x,y)==255){
         for(size_t t =1;t<maxTheta;t+=dTheta){
           double p = x*cos(DegToRad(t)) + y*sin(DegToRad(t));
-          //cout << "p:"<<p<<endl;
           if(p < maxRoe && p>=0){
-            //cout<<"t:"<<t << " p:"<<p<<endl;
             accumulator[round(p)][t]++;
             if(accumulator[round(p)][t] > maxVotes)
               maxVotes = accumulator[round(p)][t];
@@ -650,7 +648,6 @@ void HoughTransform(Image *an_image, const std::string filename, const std::stri
   int threshold =0;
   int d=40;
   int greyValue;
-  cout<<maxTheta << " "<<maxRoe<< " "<<maxVotes<<endl;
   
    for (size_t x = 1; x < maxRoe; ++x) {
     for (size_t y = 1; y < maxTheta; ++y) {
@@ -699,16 +696,13 @@ void HoughTransform(bool localMax , Image &an_image, const std::string inputfile
   int maxVotes=0;
 
  
-  //cout << inputfile<<endl;
   ifstream reader;
   reader.open(inputfile);
  
   reader>>thetaSamples >> roeSamples >> maxVotes;
-    //cout <<thetaSamples << " "<<roeSamples<<endl;
   vector<vector<int>> accumulator(roeSamples + 1,vector<int>(thetaSamples +1,0));
   for (size_t x = 1; x < maxRoe; ++x) {
     for (size_t y = 1; y < maxTheta; ++y) {
-      //cout << x << " " << y <<endl;
       reader>> accumulator[x][y] ;
     }
   }
@@ -716,7 +710,6 @@ void HoughTransform(bool localMax , Image &an_image, const std::string inputfile
 
   if(localMax){
     FindLines(an_image, threshold, accumulator, thetaSamples, roeSamples);
-    cout<<"go"<<endl;
     WriteImage(outputfile, an_image);
   }
 
@@ -727,13 +720,11 @@ void HoughTransform(bool localMax , Image &an_image, const std::string inputfile
       out_image.SetNumberGrayLevels(an_image.num_gray_levels());
 
         //fill up image
-      cout<<threshold<<endl;
       for (size_t x = 1; x < maxRoe; ++x) {
         for (size_t y = 1; y < maxTheta; ++y) {
             int numberOfVotes = accumulator[x][y];
             if(numberOfVotes > threshold){
               int value = ((double)accumulator[x][y] / maxVotes )* 255;
-              //cout << x << " " << y <<endl;
               out_image.SetPixel(x,y,accumulator[x][y]);
             }
         }
@@ -741,39 +732,14 @@ void HoughTransform(bool localMax , Image &an_image, const std::string inputfile
       //out_image.ConvertToBinary(threshold);
       LabelHoughImage(out_image,an_image,threshold, accumulator, maxVotes);
 
-
   }
   
-
-  
-
-
-
-  
-
-  /*
-  int xCenter = num_rows/2;
-  int yCenter = num_columns/2;
-
-  int d=100;
-  int greyValue;
-  //cout<<maxTheta << " "<<maxRoe<<endl;
-   for (size_t t = 0; t < maxTheta; ++t) {
-    for (size_t p = 0; p < maxRoe; ++p) {
-        int numberOfVotes = accumulator[p][t];
-        if(numberOfVotes > threshold){
-            int xEnd = xCenter + d*cos(DegToRad(t));
-            int yEnd = yCenter + d*sin(DegToRad(t));
-            DrawLine(xCenter,yCenter,xEnd,yEnd,100, &an_image);
-        }
-    }
-  }
-  //write hough image to file
-  WriteImage(outputfile, an_image);
-  //OutputAccumulator(accumulator, output_accumulator);
-  */
 }
 
+//Approach using centroid
+//This approach did not work too well
+//Instead I used the Local max approach 
+//That code is in the function FindLines()
 void LabelHoughImage( Image &an_image, Image& image_to_hough_line, int threshold, const std::vector< vector<int> > &accumulator, int maxVotes) {
   
   int current_label = 0;
@@ -855,16 +821,12 @@ void LabelHoughImage( Image &an_image, Image& image_to_hough_line, int threshold
     }
   }
 
-
   //calculate centroid
   unordered_map<int,int> areas;
   unordered_map<int,float> x,y;
   unordered_map<int,int> max;
-  //unordered_map<int,float> a, aPrime,b,bPrime,c,cPrime;
-  //const int num_rows = an_image.num_rows();
-  //const int num_columns = an_image.num_columns();
 
-  //loop to calculat maxVotes
+  //loop to calculate maxVotes
 
   for (size_t i = 0; i < num_rows; ++i) {
     for (size_t j = 0; j < num_columns; ++j) {
@@ -873,13 +835,10 @@ void LabelHoughImage( Image &an_image, Image& image_to_hough_line, int threshold
         int votes  = accumulator[i][j];
         if(max[pixelValue] < votes)
           max[pixelValue] = votes;
-        //cout << votes;
       }
     }
   }
 
-
-  
   //go through and calculate values needed for the orientation and centroid
   for (size_t i = 0; i < num_rows; ++i) {
     for (size_t j = 0; j < num_columns; ++j) {
@@ -889,8 +848,8 @@ void LabelHoughImage( Image &an_image, Image& image_to_hough_line, int threshold
 
         int votes  = accumulator[i][j];
         if(max[pixelValue] > 0){
-        x[pixelValue]+=i; //*(votes/max[pixelValue]);
-        y[pixelValue]+=j; //*(votes/max[pixelValue]);
+        x[pixelValue]+=i*(votes/max[pixelValue]);
+        y[pixelValue]+=j*(votes/max[pixelValue]);
         }
       }
     }
@@ -899,8 +858,6 @@ void LabelHoughImage( Image &an_image, Image& image_to_hough_line, int threshold
   int label_counter=0;
   //loop through each object
   for(auto area:areas) {
-      //write label
-      //writer << ++label_counter<< " ";
       
       //Cache values
       int pValue = area.first;
@@ -910,7 +867,6 @@ void LabelHoughImage( Image &an_image, Image& image_to_hough_line, int threshold
       double rCenter = (x[pValue])/(double)currentArea;
       double tCenter = (y[pValue])/(double)currentArea;
 
-  
       if(tCenter> 45 && tCenter<=135){
           int xStart,xEnd,yStart,yEnd;
      
@@ -921,8 +877,6 @@ void LabelHoughImage( Image &an_image, Image& image_to_hough_line, int threshold
           //set x to width;
           xEnd = num_rows -2;
           yEnd = (rCenter - xEnd*cos(DegToRad(tCenter))) /sin(DegToRad(tCenter));
-          cout << num_columns << " "<<num_columns1<<endl;
-          cout <<xStart << ","<<yStart << " "<<xEnd <<","<<yEnd<<endl;
           if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 &&  
             xStart < num_rows&& 
             yStart <num_columns && 
@@ -937,8 +891,6 @@ void LabelHoughImage( Image &an_image, Image& image_to_hough_line, int threshold
           xStart = (rCenter - yStart*sin(DegToRad(tCenter))) /cos(DegToRad(tCenter)); 
           yEnd = num_columns -2;
           xEnd = (rCenter - yEnd*sin(DegToRad(tCenter))) /cos(DegToRad(tCenter));
-          cout<<"horizontal"<<endl;
-          cout <<xStart << ","<<yStart << " "<<xEnd <<","<<yEnd<<endl;
           if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 
                     && xStart < num_rows 
                     && yStart < num_columns 
@@ -948,7 +900,6 @@ void LabelHoughImage( Image &an_image, Image& image_to_hough_line, int threshold
 
       }
   }
-    cout << "writing"<<endl;
     WriteImage("out.pgm" , image_to_hough_line);
   }
 
@@ -956,9 +907,8 @@ void FindLines( Image &an_image, int threshold, const std::vector< vector<int> >
   bool isMax=true;
   const int num_rows = an_image.num_rows();
   const int num_columns = an_image.num_columns();
-  int max_length=3;
-  int min_length=-3;
-    cout << roeSamples << " " << thetaSamples<<endl;
+  int max_length=5;
+  int min_length=-5;
     for (size_t r = 0; r < roeSamples; ++r) {
     for (size_t t = 0; t < thetaSamples; ++t) {
         if(accumulator[r][t] > threshold){
@@ -969,7 +919,6 @@ void FindLines( Image &an_image, int threshold, const std::vector< vector<int> >
                 for(int j=min_length;j<=max_length;++j){
                     //we need to check to make sure we are in bounds
                     if( i + r >=0 && i+r < num_rows && j + t >=0 && j + t <num_columns){
-                      //cout << i+r << " "<<j+t<<endl;
                       if( accumulator[i+r][j+t] > max){
                         //not a local maximum
                         i=j=max_length;
@@ -988,13 +937,11 @@ void FindLines( Image &an_image, int threshold, const std::vector< vector<int> >
 
                   xEnd = num_rows -2;
                   yEnd = (r - xEnd*cos(DegToRad(t))) /sin(DegToRad(t));
-                  //cout <<xStart <<" " << yStart << " "<<xEnd << " "<<yEnd<<endl;
                   if(xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0 &&  
                   xStart < num_rows && 
                   yStart <num_columns && 
                   xEnd < num_rows && 
                   yEnd <num_columns ){
-                    //cout<<"vertical"<<endl;
 
                    DrawLine(xStart,yStart,xEnd,yEnd,200, &an_image);
                }

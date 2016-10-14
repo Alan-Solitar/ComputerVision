@@ -80,7 +80,7 @@ runh2a:
 runh2b: 	
 		./$(PROGRAM_1) h1outputb.pgm 18 h2outputb.pgm
 runh2c: 	
-		./$(PROGRAM_1) h1outputc.pgm 10 h2outputc.pgm
+		./$(PROGRAM_1) h1outputc.pgm 15 h2outputc.pgm
 runh3a: 	
 		./$(PROGRAM_2) h2outputa.pgm h3outputa.pgm votingarraya.txt
 runh3b: 	
@@ -88,11 +88,11 @@ runh3b:
 runh3c: 	
 		./$(PROGRAM_2) h2outputc.pgm h3outputc.pgm votingarrayc.txt
 runh4a: 	
-		./$(PROGRAM_3) 1 hough_simple_1.pgm votingarraya.txt 350 h4outputa.pgm
+		./$(PROGRAM_3) hough_simple_1.pgm votingarraya.txt 350 h4outputa.pgm
 runh4b: 	
-		./$(PROGRAM_3) 1 hough_simple_2.pgm votingarrayb.txt 200 h4outputb.pgm
+		./$(PROGRAM_3) hough_simple_2.pgm votingarrayb.txt 200 h4outputb.pgm
 runh4c: 	
-		./$(PROGRAM_3) 1 hough_complex_1.pgm votingarrayc.txt 350 h4outputc.pgm
+		./$(PROGRAM_3) hough_complex_1.pgm votingarrayc.txt 260 h4outputc.pgm
 
 
 
