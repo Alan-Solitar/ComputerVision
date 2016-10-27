@@ -96,9 +96,10 @@ void DrawLine(int x0, int y0, int x1, int y1, int color,
 	      Image *an_image);
 void LabelImage(Image &an_image);
 
-void CalculateCentroid(Image &an_image, std::string output_file);
 void RecognizeObjects(Image &an_image, std::vector<ComputerVisionProjects::ImageStats>);
 //Functions for Current Assignment
+void CalculateCentroid(Image &an_image, std::string output_file);
+void CalculateRadius(Image &an_image);
 
 }  // namespace ComputerVisionProjects
 

@@ -424,7 +424,73 @@ void CalculateCentroid(Image &an_image, std::string output_file)
 
   }
 }
+void CalculateRadius(Image &an_image) {
+  const int num_rows = an_image.num_rows();
+  const int num_columns = an_image.num_columns();
+  std::pair<int,int> left_most,right_most;
+  std::pair<int,int> top_most,bottom_most;
 
+ 
+  //loop to find left_most
+  for (size_t i = 0; i < num_columns; ++i) {
+    for (size_t j = 0; j < num_rows; ++j) {
+      int pixelValue = an_image.GetPixel(j,i);
+      if(pixelValue ==255) {
+        left_most = {i,j};
+        i=num_columns_;
+        j=num_rows_;
+      }
+    }
+  }
+
+    //loop to find right most;
+   for (size_t i = num_columns; i >=0; --i) {
+    for (size_t j = num_rows; j >=0; --j) {
+      int pixelValue = an_image.GetPixel(j,i);
+      if(pixelValue ==255) {
+        right_most = {i,j};
+        i=j=-1;
+      }
+    }
+  }
+
+  //loop to find top most
+  for (size_t i = 0; i < num_rows; ++i) {
+    for (size_t j = 0; j < num_columns; ++j) {
+      int pixelValue = an_image.GetPixel(i,j);
+      if(pixelValue ==255) {
+        top_most = {j,i};
+        i=num_columns_;
+        j=num_rows_;
+      }
+    }
+  }
+
+  //loop to find bottom most
+  for (size_t i = num_rows; i >=0 ; --i) {
+    for (size_t j = num_columns; j >=0; --j) {
+      int pixelValue = an_image.GetPixel(i,j);
+      if(pixelValue ==255) {
+        bottom_most = {j,i};
+        i=num_columns_;
+        j=num_rows_;
+      }
+    }
+  }
+
+double diameter1 = CalculateDistance(left_most.first,left_most.second,right_most.first,right_most.second);
+double diameter1 = CalculateDistance(top_most.first,top_most.second,bottom_most.first,bottom_most.second);
+
+
+}
+
+double CalculateDistance(int x1, int y1, int x2, int y2) {
+
+  int xDif = x1-x2;
+  int yDif = y1-y2;
+  return sqrt(pow(xDif,2) + pow(yDif,2));
+
+}
 void RecognizeObjects(Image &an_image, vector<ComputerVisionProjects::ImageStats> imgStatVec)
 {
   //to use to get max moment
