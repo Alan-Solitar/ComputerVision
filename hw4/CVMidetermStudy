@@ -1,0 +1,147 @@
+1. Provide the basic equation of perspective projection.
+*focal length = distance from pinhole to image plane 
+*x = fX/z, y=fY/z
+
+
+2.What is depth of field? Depth of field relates to how much area can be seen.
+
+3. What is the focal length of a lens?
+Distance from image plane to the lens
+
+4. Provide the formula for Magnification
+
+5.  Is the depth-of-field related to the lens aperture? If yes, how is it related?
+
+Yes, it is related.  It is inversely related, meaning
+the smaller the aperture, the wider depth of field. However, this leads to less light.
+Opposite also true, bigger aperture means smaller depth of field.
+
+6.What is the time complexity of the sequential labeling algorithm in binary images?
+It's linear. 0(n) because constant number of comparisons and maybe 2 passes.
+
+7.How is the orientation of an object defined?
+The orientation of an object is defined as a line that goes through the centroid of that object.  It also has an direction represented as an angle
+
+8.Provide at least two invariant measurements that could be used for matching 2D objects
+if we assume no change in scale
+
+9.Why are the regular 4-connectivity and 8-connectivity definitions not adequate for the
+sequential labeling algorithm?
+They are not adequate because they only really work for squares
+
+10.Provide the line equation used in many vision algorithms (such as hough transform).
+Why is it prefered over the y = a * x + b representation
+
+Vision algorithms prefer p = xcostheta + ysintheta
+The reason is because y =ax+b has a hard time with vertical lines.
+
+11.Define quantum efficiency in the context of image sensing.
+
+12.Is it possible to alleviate noise by capturing N images of the same static scene and then
+computing the average image? If yes, why is this the case?
+
+Yes it is possible because noise is considered a random event tied to the camera so by taking more images you cna alleviate noise in some sense. Though it is not very efficient or practical to do so.
+
+13. Provide the definition of convolution.
+Convolution is  a matrix opertation where you compute a weighted sum of the neighboring values.  The kernel gives the weights to the other pixels
+
+14. Make sure that you can compute the convolution if you are given two images, or two 1-D
+signals.
+
+15. Write down a 3x3 filter that returns a positive value if the average value of the 4-adjacent
+neighbors is less than the center and a negative value otherwise. [ 
+
+
+16. Write down a filter that will compute the gradient in the x-direction:
+gradx(x, y) = im(x+1, y) - im(x, y) for each x, y 
+
+17.  What is a linear-shift-invariant filter?
+
+A linear shift invariant filter is a filter that
+18. What is impulse response?
+If you put an impulse into an unknown system you receive as output an impulse response
+
+19.  A two-dimensional Gaussian filter is given by the Equation (see slides). Why is this filter
+separable?
+20.  Is a separable Gaussian filter more efficient than the 2-D Gaussian filter?
+The separable filter is more efficient because it's faster and easier to implement than the 2-d filter
+
+21. How do you control the amount of smoothing in a Gaussian filter?
+The amount of smoothing in a Gaussian filter depends on the sigma
+22.Why is Gaussian filter better than regular averaging filter for smoothing?
+The Gaussian filter is better because it does a better job of giving less value to freuquencies that are far away so sudden changes don't cause so many issues
+23.  What does local edge operator compute?
+The local edge operator computes
+24.  Which are the basic 3 stages of edge detection (see Canny for example).
+25.  Sobel vs. Laplacian edge detector: Describe their differences.
+Sobel is first derivative and includes information about direction.  Laplacian is second derivative and loses this directional information.
+26.  Given a filter G for smoothing and a filter E for detection of edges, provide a filter A that
+performs both smoothing and edge detection.
+27.  What is the process of non-maximum suppression (used in edge detection, corner
+detection, etc.)
+28.  What is the dimension of the hough voting space for detecting lines?
+
+The dimension of the hough voting space will depend on the number of unknown variables.
+
+29. Suppose you want to detect circles of given radius. What is the dimension of the voting
+space? Describe how would you vote if you were given edges and their orientation.
+30.  Suppose that you are looking for a bicycle having 2 wheels of a given radius. How would
+you solve this problem?
+31.  What is the effect of resolution in hough-space on algorithm complexity, robustness to
+noise, and detection accuracy?
+●  How is template matching related to cross-correlation?
+●  How is cross-correlation different than convolution?
+●  What is normalized correlation and why is it used?
+●  Convolution in the spatial domain corresponds to multiplication in the frequency domain.
+How can you use this property to compute the spatial convolution by first going to the
+frequency domain?
+●  Would you expect the frequency response of a filter performing edge detection to be
+such that it would suppress high frequencies in the input signal?
+●  What is Nyquist frequency?
+●  Describe aliasing in the context of sub-sampling of an input signal.
+●  How can you alleviate the effects of aliasing when you down-sample an input signal?
+●  What is surface radiance?
+Energy carried by a ray coming from/out of a source
+
+
+Surface irradiane
+●  What is surface irradiance?
+Amount of power a surface is receiving.  I.e. energy arriving at a surface.
+●  How is scene radiance (L) related to image irradiance (E)  when a small 3D surface
+around a point P is imaged through lens on the image plane?
+They are linearly related
+●  What is brightness falloff?
+●  Can we assume that E is linearly related to L from small values of angle a (where a is
+the angle as described in the slides that show the connection between L and E)?
+●  How is BRDF defined?
+
+BDRF - ratio of incoming light from source to reflected light
+
+light in / light out
+ratio will be less than one
+irradiance onto surface/ radiance reflected from surface
+●  Which surfaces have a constant BRDF?
+Lambertian surfaces have a constant bdrf
+●  What is the definition of the Lambertian surface model?
+●  You are given the equation (see slides) of the reflectance map of a Lambertian surface
+of given albedo. What is the definition of an iso-brightness contour?
+●  Is it possible to recover the normal of a 3D point if you are given two images of it under
+two different, but known, lighting conditions, given (a) known albedo, and (b) uknown
+albedo?
+●  Is it possible to recover the normal of a 3D point, as well as its albedo, if you are given
+three images of it under three different but known lighting conditions?
+
+Yes, it is possible
+●  How can you formulate the problem of Shape From Shading if you are given the
+reflectance map equation R(p, q) of a Lambertian surface of known albedo?
+
+
+Photometry Notes:
+
+Steredian- Measure of Angular area
+
+-diffuse/body reflection -- matte like appearance- not a lot of irradiance. Light disperses through surface.
+-Surface/specular reflection - light bounces right back up - ex: shiny metal, can, etc...
+- Image intensity   = Body reflection + Surface reflection
+
+-Lambertian - model for ideal diffuse/body reflection - more light reflected up, but almost no light sideways

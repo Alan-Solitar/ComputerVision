@@ -1,0 +1,529 @@
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+public class Main {
+    
+    public static final String SEPARATOR = "@";
+    /*
+     * Complete the function below.
+     *
+ 	 * Note: The questions in this test build upon each other. We recommend you
+	 * copy your solutions to your text editor of choice before proceeding to
+	 * the next question as you will not be able to revisit previous questions.
+	 */
+ 
+
+    static int countHoldings(String input) {
+        
+        //split the string of holding based on SEPARATOR
+        String holdings[] = input.split(SEPARATOR);
+        
+        //return length of array which is number of holding in portfolio
+        return holdings.length;
+    }
+
+    public static void main(String[] args) throws IOException{
+        Scanner in = new Scanner(System.in);
+        int res;
+        String _input;
+        try {
+            _input = in.nextLine();
+        } catch (Exception e) {
+            _input = null;
+        }
+        res = countHoldings(_input);
+        System.out.println(res);
+    }
+}
+
+
+
+
+
+
+
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+public class Main {
+    
+    public static final String SEPARATOR = "@";
+    /*
+     * Complete the function below.
+     *
+     * Note: The questions in this test build upon each other. We recommend you
+     * copy your solutions to your text editor of choice before proceeding to
+     * the next question as you will not be able to revisit previous questions.
+     */
+    public static class PortfolioHolding {
+        
+        public PortfolioHolding(String t, String n, int q){
+            ticker = t;
+            name  = n;
+            quanitity = q;
+            
+            //this is not as nice as string.format but i was having some issues with that so settled on this
+            representation =  "[" + ticker + ", " + name + ", " + quanitity + "]";
+           
+            
+        }
+        private String template = "[%s, %s, %d]";
+        public String ticker;
+        public String name;
+        public int quanitity;
+        public String representation;
+        
+    }
+    
+    public static class HoldingComp implements Comparator<PortfolioHolding> {
+     public int compare(PortfolioHolding p1, PortfolioHolding p2) {
+         return p1.ticker.compareTo(p2.ticker);
+     }
+ }
+    
+    static String printHoldings(String portfolioString) {
+        
+        ArrayList<PortfolioHolding> pHoldings = new ArrayList<PortfolioHolding>();
+        String output = "";
+        //get array of all holdings
+        String holdings[] = portfolioString.split(SEPARATOR);
+        
+        
+        for(String str: holdings){
+            
+           
+            String[] holdingValues = str.split(",");
+            
+           PortfolioHolding holding = new PortfolioHolding(holdingValues[0],holdingValues[1],Integer.parseInt(holdingValues[2]));
+           pHoldings.add(holding);
+        }
+        
+        Collections.sort(pHoldings, new HoldingComp());
+        for(int i = 0;i<pHoldings.size()-1;i++){
+            output= output + pHoldings.get(i).representation + ", ";
+        }
+        output +=pHoldings.get(pHoldings.size()-1).representation;
+        return output;
+    }
+    
+    public static void main(String[] args) throws IOException{
+        Scanner in = new Scanner(System.in);
+        String res;
+        String _input;
+        try {
+            _input = in.nextLine();
+        } catch (Exception e) {
+            _input = null;
+        }
+        res = printHoldings(_input);
+        System.out.println(res);
+    }
+
+
+    
+}
+
+
+
+
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+public class Main {
+    public static final String SEPARATOR = "@";
+    public static final String COLON = ":";
+    
+    public static class PortfolioHolding {
+        
+        public PortfolioHolding(String t, String n, int q){
+            ticker = t;
+            name  = n;
+            quantity = q;
+            
+            
+           
+            
+        }
+        public void SetPrice(float p) {
+            price  = p;
+            value = quantity * p;
+            
+            
+        }
+        
+        //compute nav and update representation
+        public void ComputeNav(int portfolioValue){
+            nav = (value / (float) portfolioValue) *100;
+            
+            
+            //this is not as nice as string.format but i was having some issues with that so settled on this
+            representation =  "[" + ticker + ", " + name + ", " + quantity + ", " + String.format( "%.2f", price ) + ", " + String.format("%.2f",value) + ", " + String.format("%.2f",nav) +  "]";
+        }
+        private String template = "[%s, %s, %d]";
+        public String ticker;
+        public String name;
+        public int quantity;
+        public float price;
+        public float value;
+        public String representation;
+        public float nav;
+        
+    }
+    
+    public static class HoldingComp implements Comparator<PortfolioHolding> {
+        public int compare(PortfolioHolding p1, PortfolioHolding p2) {
+            return p1.ticker.compareTo(p2.ticker);
+     }
+ }
+    /*
+     * Complete the function below.
+     *
+     * Note: The questions in this test build upon each other. We recommend you
+     * copy your solutions to your text editor of choice before proceeding to
+     * the next question as you will not be able to revisit previous questions.
+     */
+
+    static String printHoldingsWithWeight(String inputString) {
+        
+        if(inputString.indexOf(COLON) > 0) {
+            
+            String[] strs = inputString.split(COLON);
+            return printHoldingsDefault(strs[0], strs[1]);
+            
+        }
+        return "";
+    }
+    
+        static String printHoldingsDefault(String portfolioString, String benchmarkString) {
+        
+        ArrayList<PortfolioHolding> pHoldings = new ArrayList<PortfolioHolding>();
+        String output = "";
+        //get array of all holdings
+        String holdings[] = portfolioString.split(SEPARATOR);
+        String benchHoldings[] = benchmarkString.split(SEPARATOR);
+        
+        int hSize = holdings.length;
+        int bSize = benchHoldings.length;
+        
+        //make sure benchmark and portfolio sizes are the same 
+        //if not there was an issue with the input
+        if(bSize!=hSize)
+            return "";
+        
+        for(int i= 0 ;i<hSize;i++){
+            
+            String[] holdingValues = holdings[i].split(",");
+            String[] bHoldingValues = benchHoldings[i].split(",");
+            PortfolioHolding holding = new PortfolioHolding(holdingValues[0],holdingValues[1],Integer.parseInt(holdingValues[2]));
+            holding.SetPrice(Float.valueOf(bHoldingValues[3]));
+            pHoldings.add(holding);
+        }
+        
+        
+        //get total value of portfolio
+        int portfolioValue=0;
+        for(PortfolioHolding x: pHoldings){
+            portfolioValue+=x.value;
+        }
+        
+        int size= pHoldings.size();
+        Collections.sort(pHoldings, new HoldingComp());
+        for(int i = 0;i<size-1;i++){
+            pHoldings.get(i).ComputeNav(portfolioValue);
+            output= output + pHoldings.get(i).representation + ", ";
+        }
+        pHoldings.get(size-1).ComputeNav(portfolioValue);
+        output +=pHoldings.get(size-1).representation;
+        return output;
+    }
+
+    public static void main(String[] args) throws IOException{
+        Scanner in = new Scanner(System.in);
+        String res;
+        String _input;
+        try {
+            _input = in.nextLine();
+        } catch (Exception e) {
+            _input = null;
+        }
+        res = printHoldingsWithWeight(_input);
+        System.out.println(res);
+    }
+}
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////
+static String generateTransactions(String inputString) {
+        
+        if(inputString.indexOf(COLON) > 0) {
+            
+            String[] strs = inputString.split(COLON);
+            ArrayList<PortfolioHolding> portfolio  = printHoldingsDefault(strs[0], strs[1]);
+            ArrayList<PortfolioHolding> bench  = printHoldingsDefault(strs[0], strs[0]);
+            
+            int pSize = portfolio.size();
+            int bSize = bench.size();
+            
+            if(pSize!=bSize)
+                return "";
+            
+            for(int i = 0;i<pSize;i++){
+                int difference  = portfolio.get(i).nav - bench.get(i).nav;
+                String transactionType;
+                transactionType = difference > 0?SELL:BUY; 
+                nav  = value / portfolioValue
+                
+            }
+        }
+        return "";
+        return "";
+    }
+    
+    static ArrayList<PortfolioHolding> printHoldingsDefault(String portfolioString, String benchmarkString) {
+        
+        ArrayList<PortfolioHolding> pHoldings = new ArrayList<PortfolioHolding>();
+        String output = "";
+        //get array of all holdings
+        String holdings[] = portfolioString.split(SEPARATOR);
+        String benchHoldings[] = benchmarkString.split(SEPARATOR);
+        
+        int hSize = holdings.length;
+        int bSize = benchHoldings.length;
+        
+        //make sure benchmark and portfolio sizes are the same 
+        //if not there was an issue with the input
+        if(bSize!=hSize)
+            return "";
+        
+        for(int i= 0 ;i<hSize;i++){
+            
+            String[] holdingValues = holdings[i].split(",");
+            String[] bHoldingValues = benchHoldings[i].split(",");
+            PortfolioHolding holding = new PortfolioHolding(holdingValues[0],holdingValues[1],Integer.parseInt(holdingValues[2]));
+            holding.SetPrice(Float.valueOf(bHoldingValues[3]));
+            pHoldings.add(holding);
+        }
+        
+        
+        //get total value of portfolio
+        int portfolioValue=0;
+        for(PortfolioHolding x: pHoldings){
+            portfolioValue+=x.value;
+        }
+        
+        int size= pHoldings.size();
+        Collections.sort(pHoldings, new HoldingComp());
+        for(int i = 0;i<size-1;i++){
+            pHoldings.get(i).ComputeNav(portfolioValue);
+            output= output + pHoldings.get(i).representation + ", ";
+        }
+        pHoldings.get(size-1).ComputeNav(portfolioValue);
+        output +=pHoldings.get(size-1).representation;
+        return pHoldings;
+    }
+
+    public static void main(String[] args) throws IOException{
+        Scanner in = new Scanner(System.in);
+        String res;
+        String _input;
+        try {
+            _input = in.nextLine();
+        } catch (Exception e) {
+            _input = null;
+        }
+        res = generateTransactions(_input);
+        System.out.println(res);
+    }
+}
+////////////////////////////////////////////////////////////////////////////////////////////
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+
+public class Main {
+    
+    public static final String SEPARATOR = "@";
+    public static final String COLON = ":";
+    public static final String BUY = "BUY";
+    public static final String SELL = "SELL";
+    
+    
+    public static class Transaction {
+        
+        public Transaction(String type, String tick, double q) {
+            transactionType = type;
+            ticker = tick;
+            quantity = q;
+            representation =  "[" + transactionType + ", " + ticker + ", " + String.format( "%.2f", quantity ) + "]";
+            
+        }
+        public String transactionType;
+        public String ticker;
+        public Double quantity;
+        public String representation;
+        
+    }
+    public static class PortfolioHolding {
+        
+        public PortfolioHolding(String t, String n, int q){
+            ticker = t;
+            name  = n;
+            quantity = q;
+        }
+        public void SetPrice(Double p) {
+            price  = p;
+            value = quantity * p;
+           
+        }
+        
+        //compute nav and update representation
+        public void ComputeNav(double pValue){
+            nav = (value / pValue) *100;
+            portfolioValue = pValue;
+            
+            
+            //this is not as nice as string.format but i was having some issues with that so settled on this
+            representation =  "[" + ticker + ", " + name + ", " + quantity + ", " + String.format( "%.2f", price ) + ", " + String.format("%.2f",value) + ", " + String.format("%.2f",nav) +  "]";
+        }
+        private String template = "[%s, %s, %d]";
+        public String ticker;
+        public String name;
+        public int quantity;
+        public double price;
+        public double value;
+        public String representation;
+        public double nav;
+        public double portfolioValue;
+    }
+    
+    public static class HoldingComp implements Comparator<PortfolioHolding> {
+        public int compare(PortfolioHolding p1, PortfolioHolding p2) {
+            return p1.ticker.compareTo(p2.ticker);
+     }
+ }
+    
+    /*
+     * Complete the function below.
+     *
+     * Note: The questions in this test build upon each other. We recommend you
+     * copy your solutions to your text editor of choice before proceeding to
+     * the next question as you will not be able to revisit previous questions.
+     */
+
+
+    static String generateTransactions(String inputString) {
+        
+        if(inputString.indexOf(COLON) > 0) {
+            
+            String[] strs = inputString.split(COLON);
+            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+            ArrayList<PortfolioHolding> portfolio  = printHoldingsDefault(strs[0], strs[1]);
+            ArrayList<PortfolioHolding> bench  = printHoldingsDefault(strs[1], strs[1]);
+            
+            int pSize = portfolio.size();
+            int bSize = bench.size();
+            
+            if(pSize!=bSize)
+                return "";
+            
+            for(int i = 0;i<pSize;i++){
+                PortfolioHolding bHolding = bench.get(i);
+                PortfolioHolding holding  = portfolio.get(i);
+                double difference  = holding.nav - bHolding.nav;
+                String transactionType;
+                transactionType = difference > 0?SELL:BUY; 
+                //nav  = quantity*price / portfolioValue
+                Double targetQuantity = bHolding.nav/100 / holding.price *holding.portfolioValue;
+               
+                Double tQuantity  = targetQuantity -holding.quantity;
+                Transaction transaction = new Transaction(transactionType,holding.ticker,tQuantity);
+                transactions.add(transaction);
+            }
+            String output = "";
+            int tSize = transactions.size();
+            for(int i = 0;i<tSize-1;i++){
+                output= output + transactions.get(i).representation + ", ";
+            }
+            output +=transactions.get(tSize-1).representation;
+            return output;
+        }
+        return "";
+       
+    }
+    
+    static ArrayList<PortfolioHolding> printHoldingsDefault(String portfolioString, String benchmarkString) {
+        
+        ArrayList<PortfolioHolding> pHoldings = new ArrayList<PortfolioHolding>();
+        String output = "";
+        //get array of all holdings
+        String holdings[] = portfolioString.split(SEPARATOR);
+        String benchHoldings[] = benchmarkString.split(SEPARATOR);
+        
+        int hSize = holdings.length;
+        int bSize = benchHoldings.length;
+        
+        //make sure benchmark and portfolio sizes are the same 
+        //if not there was an issue with the input
+        if(bSize!=hSize)
+            return null;
+        
+        for(int i= 0 ;i<hSize;i++){
+            
+            String[] holdingValues = holdings[i].split(",");
+            String[] bHoldingValues = benchHoldings[i].split(",");
+            PortfolioHolding holding = new PortfolioHolding(holdingValues[0],holdingValues[1],Integer.parseInt(holdingValues[2]));
+            
+            holding.SetPrice(Double.valueOf(bHoldingValues[3]));
+            pHoldings.add(holding);
+        }
+        
+        
+        //get total value of portfolio
+        int portfolioValue=0;
+        for(PortfolioHolding x: pHoldings){
+            portfolioValue+=x.value;
+        }
+        
+        
+        int size= pHoldings.size();
+        Collections.sort(pHoldings, new HoldingComp());
+        for(int i = 0;i<size-1;i++){
+            pHoldings.get(i).ComputeNav(portfolioValue);
+            output= output + pHoldings.get(i).representation + ", ";
+        }
+        pHoldings.get(size-1).ComputeNav(portfolioValue);
+        output +=pHoldings.get(size-1).representation;
+        return pHoldings;
+    }
+
+    public static void main(String[] args) throws IOException{
+        Scanner in = new Scanner(System.in);
+        String res;
+        String _input;
+        try {
+            _input = in.nextLine();
+        } catch (Exception e) {
+            _input = null;
+        }
+        res = generateTransactions(_input);
+        System.out.println(res);
+    }
+}
