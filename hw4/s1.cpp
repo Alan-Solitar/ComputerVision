@@ -34,14 +34,13 @@ int main(int argc, char **argv) {
 	cout << radius<<endl;
 
 	//write to text file
-	ifstream writer(output_file);
-
-	double x = centroid.first;
-	double y =centroid.second;
-
+	cout <<output_file <<endl;
+	ofstream writer;
+	writer.open(output_file);
+	cout <<"writing"<<endl;
 	string space = " ";
-	writer >> centroid.first >>space >>centroid.second >> space >>radius;
-
+	writer << centroid.first <<space <<centroid.second << space <<radius;
+	cout <<"done"<<endl;
 	writer.close();
 	/*
 	if (!WriteImage(output_file, an_image)) {
