@@ -362,12 +362,8 @@ void LabelImage( Image &an_image) {
               int x = labelSet.Find(north);
               int y = labelSet.Find(west);
               labelSet.UnionSets(x, y);
-
             } 
-
       }
-
-
     }
     //second pass through
     for (size_t i = 0; i < num_rows; ++i) {
@@ -386,9 +382,9 @@ void LabelImage( Image &an_image) {
     }
   }
 
-  }
+}
 
-void CalculateCentroid(Image &an_image, std::string output_file)
+pair<double,double> CalculateCentroid(Image &an_image)
 {
   const double pi = 3.1415926535897;
 
@@ -409,7 +405,6 @@ void CalculateCentroid(Image &an_image, std::string output_file)
       }
     }
   }
-  int label_counter=0;
   //loop through each object
   for(auto area:areas) {
  
@@ -421,31 +416,30 @@ void CalculateCentroid(Image &an_image, std::string output_file)
       double xCenter = (x[pValue])/(double)currentArea;
       double yCenter = (y[pValue])/(double)currentArea;
       cout << xCenter << " "<<yCenter<<endl;
-
+      return {xCenter,yCenter};
   }
 }
-void CalculateRadius(Image &an_image) {
+double CalculateRadius(Image &an_image) {
   const int num_rows = an_image.num_rows();
   const int num_columns = an_image.num_columns();
   std::pair<int,int> left_most,right_most;
   std::pair<int,int> top_most,bottom_most;
 
- 
   //loop to find left_most
   for (size_t i = 0; i < num_columns; ++i) {
     for (size_t j = 0; j < num_rows; ++j) {
       int pixelValue = an_image.GetPixel(j,i);
       if(pixelValue ==255) {
         left_most = {i,j};
-        i=num_columns_;
-        j=num_rows_;
+        i=num_columns;
+        j=num_rows;
       }
     }
   }
 
     //loop to find right most;
-   for (size_t i = num_columns; i >=0; --i) {
-    for (size_t j = num_rows; j >=0; --j) {
+   for (int i = num_columns-1; i >=0; --i) {
+    for (int j = num_rows-1; j >=0; --j) {
       int pixelValue = an_image.GetPixel(j,i);
       if(pixelValue ==255) {
         right_most = {i,j};
@@ -453,35 +447,35 @@ void CalculateRadius(Image &an_image) {
       }
     }
   }
-
+  cout <<"done "<<endl;
   //loop to find top most
   for (size_t i = 0; i < num_rows; ++i) {
     for (size_t j = 0; j < num_columns; ++j) {
       int pixelValue = an_image.GetPixel(i,j);
       if(pixelValue ==255) {
         top_most = {j,i};
-        i=num_columns_;
-        j=num_rows_;
+        i=num_rows;
+        j=num_columns;
       }
     }
   }
+
 
   //loop to find bottom most
-  for (size_t i = num_rows; i >=0 ; --i) {
-    for (size_t j = num_columns; j >=0; --j) {
+  for (int i = num_rows-1; i >=0 ; --i) {
+    for (int j = num_columns-1; j >=0; --j) {
       int pixelValue = an_image.GetPixel(i,j);
       if(pixelValue ==255) {
+        cout <<"here" <<endl;
         bottom_most = {j,i};
-        i=num_columns_;
-        j=num_rows_;
+        i=j=-1;
       }
     }
   }
-
 double diameter1 = CalculateDistance(left_most.first,left_most.second,right_most.first,right_most.second);
-double diameter1 = CalculateDistance(top_most.first,top_most.second,bottom_most.first,bottom_most.second);
+double diameter2 = CalculateDistance(top_most.first,top_most.second,bottom_most.first,bottom_most.second);
 
-
+return (diameter1 + diameter2)/2;
 }
 
 double CalculateDistance(int x1, int y1, int x2, int y2) {

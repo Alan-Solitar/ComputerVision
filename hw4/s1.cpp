@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <iostream>
 #include <string>
+#include <fstream>
 
 using namespace std;
 using namespace ComputerVisionProjects;
@@ -27,13 +28,26 @@ int main(int argc, char **argv) {
 
 	//convert image to binary
 	an_image.ConvertToBinary(threshold);
-	CalculateCentroid(an_image, output_file); 
+	auto centroid = CalculateCentroid(an_image);
+	cout <<centroid.first << " "<<centroid.second<<endl;
+	auto radius  = CalculateRadius(an_image);
+	cout << radius<<endl;
 
-	
-	
+	//write to text file
+	ifstream writer(output_file);
+
+	double x = centroid.first;
+	double y =centroid.second;
+
+	string space = " ";
+	writer >> centroid.first >>space >>centroid.second >> space >>radius;
+
+	writer.close();
+	/*
 	if (!WriteImage(output_file, an_image)) {
 		cout << "Can't write to file " << output_file << endl;
 		return 0;
 	}
+	*/
 	
 }

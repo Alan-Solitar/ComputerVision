@@ -70,7 +70,7 @@ all:
 
 
 runs1a: 	
-		./$(PROGRAM_0) sphere1.pgm 110 s1outputa.pgm
+		./$(PROGRAM_0) sphere1.pgm 110 s1outputa.txt
 runs1b: 	
 		./$(PROGRAM_0) sphere2.pgm s1outputb.pgm
 runs1c: 	

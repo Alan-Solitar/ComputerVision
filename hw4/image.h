@@ -98,8 +98,9 @@ void LabelImage(Image &an_image);
 
 void RecognizeObjects(Image &an_image, std::vector<ComputerVisionProjects::ImageStats>);
 //Functions for Current Assignment
-void CalculateCentroid(Image &an_image, std::string output_file);
-void CalculateRadius(Image &an_image);
+std::pair<double,double> CalculateCentroid(Image &an_image);
+double CalculateRadius(Image &an_image);
+double CalculateDistance(int x1, int y1, int x2, int y2);
 
 }  // namespace ComputerVisionProjects
 
