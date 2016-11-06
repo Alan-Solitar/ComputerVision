@@ -19,7 +19,6 @@ int main(int argc, char **argv) {
 	const int threshold(stoi(argv[2]));
 	const string output_file(argv[3]);
 
-
 	Image an_image;
 	if (!ReadImage(input_file, &an_image)) {
 		cout << "Can't open file " << input_file << endl;
@@ -28,6 +27,8 @@ int main(int argc, char **argv) {
 
 	//convert image to binary
 	an_image.ConvertToBinary(threshold);
+	
+	//Calculate centroid and radius
 	auto centroid = CalculateCentroid(an_image);
 	cout <<centroid.first << " "<<centroid.second<<endl;
 	auto radius  = CalculateRadius(an_image);
@@ -42,11 +43,5 @@ int main(int argc, char **argv) {
 	writer << centroid.first <<space <<centroid.second << space <<radius;
 	cout <<"done"<<endl;
 	writer.close();
-	/*
-	if (!WriteImage(output_file, an_image)) {
-		cout << "Can't write to file " << output_file << endl;
-		return 0;
-	}
-	*/
 	
-}
+ }

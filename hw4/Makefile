@@ -67,20 +67,11 @@ all:
 	make $(PROGRAM_2)
 	make $(PROGRAM_3)
 
-
-
-runs1a: 	
-		./$(PROGRAM_0) sphere1.pgm 110 s1outputa.txt
-runs1b: 	
-		./$(PROGRAM_0) sphere2.pgm s1outputb.pgm
-runs1c: 	
-		./$(PROGRAM_0) sphere3.pgm s1outputc.pgm
+runs1: 	
+		./$(PROGRAM_0) sphere0.pgm 110 s1output.txt
 runs2a: 	
-		./$(PROGRAM_1) h1outputa.pgm 30 s2outputa.pgm
-runs2b: 	
-		./$(PROGRAM_1) h1outputb.pgm 18 s2outputb.pgm
-runs2c: 	
-		./$(PROGRAM_1) h1outputc.pgm 15 s2outputc.pgm
+		./$(PROGRAM_1) s1output.txt sphere1.pgm sphere2.pgm sphere3.pgm s2output.txt
+
 runs3a: 	
 		./$(PROGRAM_2) s2outputa.pgm s3outputa.pgm votingarraya.txt
 runs3b: 	

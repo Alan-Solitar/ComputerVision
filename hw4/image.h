@@ -101,6 +101,8 @@ void RecognizeObjects(Image &an_image, std::vector<ComputerVisionProjects::Image
 std::pair<double,double> CalculateCentroid(Image &an_image);
 double CalculateRadius(Image &an_image);
 double CalculateDistance(int x1, int y1, int x2, int y2);
+std::pair<double,double> FindBrightestPixel(Image &an_image);
+std::vector<double> CalculateNormal(Image &an_image, std::pair<double,double> centroid, double radius,std::pair<double,double> bright);
 
 }  // namespace ComputerVisionProjects
 

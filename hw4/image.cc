@@ -305,7 +305,6 @@ DrawLine(int x0, int y0, int x1, int y1, int color,
 
 void LabelImage( Image &an_image) {
 
-
   const double pi = 3.1415926535897;
   int current_label = 0;
   int current_Grey_Scale= 10;
@@ -336,7 +335,6 @@ void LabelImage( Image &an_image) {
             objectOfPixel[i][j] = objectOfPixel[i-1][j]!=0?objectOfPixel[i-1][j]:++current_label;
             continue;
           } 
-
             int northWest = objectOfPixel[i-1][j-1];
             int west = objectOfPixel[i][j-1];
             int north = objectOfPixel[i-1][j];
@@ -475,7 +473,7 @@ double CalculateRadius(Image &an_image) {
 double diameter1 = CalculateDistance(left_most.first,left_most.second,right_most.first,right_most.second);
 double diameter2 = CalculateDistance(top_most.first,top_most.second,bottom_most.first,bottom_most.second);
 
-return (diameter1 + diameter2)/2;
+return ((diameter1 + diameter2)/2)/2;
 }
 
 double CalculateDistance(int x1, int y1, int x2, int y2) {
@@ -557,6 +555,44 @@ void RecognizeObjects(Image &an_image, vector<ComputerVisionProjects::ImageStats
      }
     }
 
+}
+std::pair<double,double> FindBrightestPixel(Image &an_image) {
+
+  const int num_rows = an_image.num_rows();
+  const int num_columns = an_image.num_columns();
+
+  int brightest=0;
+  std::pair<double,double> brightestPixel(0,0);
+  for (size_t i = 0; i < num_rows; ++i) {
+    for (size_t j = 0; j < num_columns; ++j) {
+      int value = an_image.GetPixel(i,j);
+      if(value > brightest) {
+        brightest = value; 
+        brightestPixel.first=i;
+        brightestPixel.second=j;
+      }
+    }
+  }
+  return brightestPixel;
+}
+vector<double> CalculateNormal(Image &an_image, pair<double,double> centroid, double radius,pair<double,double> bright) {
+/*
+  N = (x_bright - x_center, y_bright - y_center, z_center - z_bright) / Norm(N)
+
+ We are only missing z_center and z_bright.
+
+ We can recover (z_center - z_bright) from the equation of a sphere:
+
+ (z_center - z_bright) = sqrt(radius^2 - (x_bright - x_center)^2 - (y_bright - y_center)^2)
+*/
+
+  //calcualte zCenter - zBrightness
+  double deltaX = bright.first - centroid.first;
+  double deltaY = bright.second - centroid.second;
+  double deltaZ = sqrt(pow(radius,2) -pow(deltaX,2) -pow(deltaY,2));
+
+  vector<double> normal{deltaX,deltaY,deltaZ};
+  return normal;
 }
 
 }  // namespace ComputerVisionProjects
