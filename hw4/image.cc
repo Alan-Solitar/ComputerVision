@@ -558,11 +558,12 @@ void RecognizeObjects(Image &an_image, vector<ComputerVisionProjects::ImageStats
 }
 std::pair<double,double> FindBrightestPixel(Image &an_image) {
 
+cout<<"start"<<endl;
   const int num_rows = an_image.num_rows();
   const int num_columns = an_image.num_columns();
 
   int brightest=0;
-  std::pair<double,double> brightestPixel(0,0);
+  std::pair<double,double> brightestPixel;
   for (size_t i = 0; i < num_rows; ++i) {
     for (size_t j = 0; j < num_columns; ++j) {
       int value = an_image.GetPixel(i,j);
@@ -576,22 +577,17 @@ std::pair<double,double> FindBrightestPixel(Image &an_image) {
   return brightestPixel;
 }
 vector<double> CalculateNormal(Image &an_image, pair<double,double> centroid, double radius,pair<double,double> bright) {
-/*
-  N = (x_bright - x_center, y_bright - y_center, z_center - z_bright) / Norm(N)
-
- We are only missing z_center and z_bright.
-
- We can recover (z_center - z_bright) from the equation of a sphere:
-
- (z_center - z_bright) = sqrt(radius^2 - (x_bright - x_center)^2 - (y_bright - y_center)^2)
-*/
 
   //calcualte zCenter - zBrightness
   double deltaX = bright.first - centroid.first;
   double deltaY = bright.second - centroid.second;
   double deltaZ = sqrt(pow(radius,2) -pow(deltaX,2) -pow(deltaY,2));
 
-  vector<double> normal{deltaX,deltaY,deltaZ};
+  vector<double> normal;
+  normal.push_back(deltaX);
+  normal.push_back(deltaY);
+  normal.push_back(deltaZ);
+
   return normal;
 }
 

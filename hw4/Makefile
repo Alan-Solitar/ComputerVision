@@ -69,11 +69,12 @@ all:
 
 runs1: 	
 		./$(PROGRAM_0) sphere0.pgm 110 s1output.txt
-runs2a: 	
+runs2: 	
 		./$(PROGRAM_1) s1output.txt sphere1.pgm sphere2.pgm sphere3.pgm s2output.txt
 
-runs3a: 	
-		./$(PROGRAM_2) s2outputa.pgm s3outputa.pgm votingarraya.txt
+runs3: 	
+		./$(PROGRAM_2) s2output.txt sphere1.pgm sphere2.pgm sphere3.pgm s2output.txt 5 100 s3output.pgm
+
 runs3b: 	
 		./$(PROGRAM_2) s2outputb.pgm s3outputb.pgm votingarrayb.txt
 runs3c: 	

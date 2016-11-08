@@ -14,8 +14,14 @@ int main(int argc, char **argv) {
 		printf("Usage: %s inputfile outputfile\n", argv[0]);
 		return 0;
 	}
+	
 	const string input_file(argv[1]);
-	const string output_file(argv[2]);
+	const string input_image1(argv[2]);
+	const string input_image2(argv[3]);
+	const string input_image3(argv[4]);
+	const int step(stoi(argv[5]));
+	const int threshold(stoi(argv[6]));
+	const string output_image(argv[7]);
 
 
 	Image an_image;
