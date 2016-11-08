@@ -10,8 +10,8 @@ using namespace ComputerVisionProjects;
 
 int main(int argc, char **argv) {
 
-	if (argc != 3) {
-		printf("Usage: %s inputfile outputfile\n", argv[0]);
+	if (argc != 8) {
+		printf("Usage: %s inputfile inputimage1 inputimage2 inputimage3 step threshold outputimage\n", argv[0]);
 		return 0;
 	}
 	
@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 
 
 	Image an_image;
-	if (!ReadImage(input_file, &an_image)) {
+	if (!ReadImage(input_image1, &an_image)) {
 		cout << "Can't open file " << input_file << endl;
 		return 0;
 	}
