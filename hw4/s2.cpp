@@ -90,6 +90,7 @@ int main(int argc, char **argv) {
 	//NormalizeAndWrite(centroid,radius,output_file);
 	ofstream writer;
 	writer.open(output_file);
+	vector<double> components;
 
 	for(auto n:normal1){
 		double component = n*an_image1.GetPixel(brightPt1.first,brightPt1.second);
