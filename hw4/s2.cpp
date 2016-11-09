@@ -6,6 +6,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <math.h>
 
 using namespace std;
 using namespace ComputerVisionProjects;
@@ -15,32 +16,12 @@ std::vector<double> NormalComputations(Image an_image,pair<double,double> centro
 	vector<double> normal  = CalculateNormal(an_image,centroid,radius,brightPt);
 	return normal;
 }
-void NormalizeAndWrite(pair<double,double> centroid, double radius, string output_file){
-	//ofstream writer;
-	//writer.open(output_file);
-
-	//auto n1 = NormalComputations(i1,centroid,radius);
-	//cout << n1[0]<<endl;
-	//auto n2 = NormalComputations(i1,centroid,radius);
-	//auto n3 = NormalComputations(i1,centroid,radius);
-
-		//for(auto n:n1){
-		//	writer <<n << " ";
-	//}
-		//writer << endl;
-/*
-		for(auto n:n2){
-			writer <<n << " ";
-		}
-		writer << endl;
-		for(auto n:n3){
-			writer <<n << " ";
-		}
-
-		writer << endl;
-*/
-
-		//writer.close();
+double CalculateMagnitude(std::vector<double> normal) {
+	int sum =0;
+	for(auto i: normal){
+		sum+=(i*i);
+	}
+	return sqrt(sum);
 }
 int main(int argc, char **argv) {
 
@@ -87,32 +68,32 @@ int main(int argc, char **argv) {
 
 	pair<double,double> brightPt1 = FindBrightestPixel(an_image1);
 	vector<double> normal1  = CalculateNormal(an_image1,centroid,radius,brightPt1);
-	//NormalizeAndWrite(centroid,radius,output_file);
+	double magnitude1 = CalculateMagnitude(normal1);
 	ofstream writer;
 	writer.open(output_file);
-	vector<double> components;
 
 	for(auto n:normal1){
-		double component = n*an_image1.GetPixel(brightPt1.first,brightPt1.second);
+		double component = n*an_image1.GetPixel(brightPt1.first,brightPt1.second)/magnitude1;
 		writer <<component << " ";
 	}
 	writer<<endl;
 
 	pair<double,double> brightPt2 = FindBrightestPixel(an_image2);
 	vector<double> normal2  = CalculateNormal(an_image2,centroid,radius,brightPt2);
-	//NormalizeAndWrite(centroid,radius,output_file);
+	double magnitude2 = CalculateMagnitude(normal2);
 	for(auto n:normal2){
-		double component = n*an_image2.GetPixel(brightPt2.first,brightPt2.second);
+		double component = n*an_image2.GetPixel(brightPt2.first,brightPt2.second)/magnitude2;
 		writer <<component << " ";
 	}
 	writer<<endl;
 
 	pair<double,double> brightPt3 = FindBrightestPixel(an_image3);
 	vector<double> normal3  = CalculateNormal(an_image3,centroid,radius,brightPt3);
-	//NormalizeAndWrite(centroid,radius,output_file);
+	double magnitude3 = CalculateMagnitude(normal3);
+	
 	
 	for(auto n:normal3){
-		double component = n*an_image3.GetPixel(brightPt3.first,brightPt3.second);
+		double component = n*an_image3.GetPixel(brightPt3.first,brightPt3.second)/magnitude3;
 		writer <<component<< " ";
 	}
 
