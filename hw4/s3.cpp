@@ -8,6 +8,7 @@
 #include <fstream>
 #include <vector>
 #include <map>
+#include <math.h>
 
 
 using namespace std;
@@ -37,7 +38,6 @@ int main(int argc, char **argv) {
 	const int threshold(stoi(argv[6]));
 	const string output_image(argv[7]);
 
-cout <<step << " "<<threshold;
 	Image an_image1,an_image2,an_image3, needle_map_image;
 	if (!ReadImage(input_image1, &an_image1)) {
 		cout << "Can't open file " << input_image1 << endl;
@@ -63,7 +63,7 @@ cout <<step << " "<<threshold;
 	ReadInput(matrix,input_file);
 	InvertMatrix(matrix);
 
-	int distance =5;
+	int distance =2;
 	map<pair<int,int>,double[3]> normals;
 	CalculateStuff(an_image1,an_image2,an_image3,step,threshold,normals,matrix);
 	for(auto entry:normals){
@@ -72,7 +72,7 @@ cout <<step << " "<<threshold;
 		int xEnd  = x + entry.second[0]*distance;
 		int yEnd  = y + entry.second[1]*distance;
 		if(x < 100 && y<100)
-		cout << entry.first.first << " "<<entry.first.second << ": "<< entry.second[0] <<" "<<entry.second[1] << " "<<entry.second[2]<<" "<<xEnd << " "<<yEnd <<endl;
+		//cout << entry.first.first << " "<<entry.first.second << ": "<< entry.second[0] <<" "<<entry.second[1] << " "<<entry.second[2]<<" "<<xEnd << " "<<yEnd <<endl;
 
 		if(xEnd < num_rows && yEnd <num_columns && xEnd > 0 && yEnd >0)
 			DrawLine(x,y,xEnd,yEnd,255,&an_image1);
@@ -101,35 +101,46 @@ void ReadInput(double matrix[3][3], string input_file){
 	}
 	reader.close();
 
-	for(int i=0;i<3;i++){
-		for(int j =0;j<3;j++){
-			cout <<  matrix[i][j] << " ";
-		}
-		cout<<endl;
-	}
+
 }
 double CalculateDeterminant(double matrix[3][3]){
 
-	double a = (matrix[0][0] * matrix[1][1] * matrix[2][2]) + (matrix[1][0] * matrix[2][1] * matrix[3][2]) + (matrix[2][0] * matrix[3][1] * matrix[4][2]);
-   	double b = (matrix[0][2] * matrix[1][1] * matrix[2][0]) + (matrix[1][2] * matrix[2][1] * matrix[3][0]) + (matrix[2][2] * matrix[3][1] * matrix[4][0]);
-   	return a-b;
+	for(int i=0;i<3;i++){
+		for(int j=0;j<3;j++){
+			cout<<matrix[i][j]<< " ";
+		}
+		cout<<endl;
+	}
+	cout << matrix[4][2];
+	double x = (matrix[0][0] * matrix[1][1] * matrix[2][2]) + (matrix[1][0] * matrix[2][1] * matrix[3][2]) + (matrix[2][0] * matrix[3][1] * matrix[4][2]);
+   	double y = (matrix[0][2] * matrix[1][1] * matrix[2][0]) + (matrix[1][2] * matrix[2][1] * matrix[3][0]) + (matrix[2][2] * matrix[3][1] * matrix[4][0]);
 
+   	//double determinant = (matrix[0][0]*(matrix[1][1]*matrix[2][2] - matrix[1]][2]*matrix[2][1] )) - (matrix[0][1]*(matrix[1][0]*matrix[2][2] - matrix[1][2]*matrix[2][0])) + (matrix[0][2]*(matrix[1][0]*matrix[2][1] -matrix[1][1]*matrix[2][0]));
+   	return x-y;
 }
 void InvertMatrix(double matrix[3][3]) {
 
 	double determinant = CalculateDeterminant(matrix);
+	cout <<determinant<<endl;
+
 	determinant = 1/determinant;
 
-
 	matrix[0][0] =  ((matrix[1][1]*matrix[2][2]) -(matrix[2][1]*matrix[1][2]))*determinant;
-	matrix[1][0] = ((-matrix[0][1]*matrix[2][2])-(matrix[0][2]*matrix[2][1]))*determinant;
+	matrix[1][0] = ((matrix[0][2]*matrix[2][1])-(matrix[0][1]*matrix[2][2]))*determinant;
 	matrix[2][0] =  ((matrix[0][1]*matrix[1][2])-(matrix[0][2]*matrix[1][1]))*determinant;
-	matrix[0][1] = ((-matrix[1][0]*matrix[2][2])-(matrix[1][2]*matrix[2][0]))*determinant;
-	matrix[1][1] =  ((matrix[0][0]*matrix[2][2])-(matrix[0][2]*matrix[2][0]))*determinant;
-	matrix[2][1] = ((-matrix[0][0]*matrix[1][2])-(matrix[1][0]*matrix[0][2]))*determinant;
+	matrix[0][1] = ((matrix[1][2]*matrix[2][0])-(matrix[1][0]*matrix[2][2]))*determinant;
+	matrix[1][1] =  ((matrix[0][0]*matrix[2][23e3])-(matrix[0][2]*matrix[2][0]))*determinant;
+	matrix[2][1] = ((matrix[1][0]*matrix[0][2])-(matrix[0][0]*matrix[1][2]))*determinant;
 	matrix[0][2] =  ((matrix[1][0]*matrix[2][1])-(matrix[2][0]*matrix[1][1]))*determinant;
-	matrix[1][2] = ((-matrix[0][0]*matrix[2][1])-(matrix[2][0]*matrix[0][1]))*determinant;
+	matrix[1][2] = ((matrix[2][0]*matrix[0][1])-(matrix[0][0]*matrix[2][1]))*determinant;
 	matrix[2][2] =  ((matrix[0][0]*matrix[1][1])-(matrix[1][0]*matrix[0][1]))*determinant;
+
+	for(int i=0;i<3;i++){
+		for(int j=0;j<3;j++){
+			cout << matrix[i][j] <<" ";
+		}
+		cout<<endl;
+	}
 }
 double CalculateIntensity(Image &an_image){
 	vector<double> intensities;
@@ -145,13 +156,23 @@ void MatrixMultiplication(double matrix[3][3], int intensities[3], double result
 			resultMatrix[i]+=matrix[i][j]*intensities[j];
 		}
 	}
+
+/*
+	double magnitude=0;
+	for(int i=0;i<3;i++){
+			magnitude+=pow(resultMatrix[i],2);
+	}
+		magnitude = sqrt(magnitude);
+	for(int i=0;i<3;i++){
+		resultMatrix[i] = resultMatrix[i]/magnitude;
+	}
+	*/
 }
 
 void CalculateStuff(Image &an_image1,Image &an_image2,Image &an_image3,int step, int threshold, map<pair<int,int>,double[3]> &normals, double matrix[3][3]){
 
 	const int num_rows = an_image1.num_rows();
 	const int num_columns = an_image1.num_columns();
-	cout<<step<<endl;
 	int current_step=step;
 	for (size_t i = 0; i < num_rows; ++i) {
     	for (size_t j = 0; j < num_columns; ++j) {
@@ -174,6 +195,5 @@ void CalculateStuff(Image &an_image1,Image &an_image2,Image &an_image3,int step,
       		current_step++;
    		 }
 	}
-
 }
  

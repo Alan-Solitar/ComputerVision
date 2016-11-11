@@ -583,6 +583,7 @@ vector<double> CalculateNormal(Image &an_image, pair<double,double> centroid, do
   double deltaY = bright.second - centroid.second;
   double deltaZ = sqrt(pow(radius,2) -pow(deltaX,2) -pow(deltaY,2));
 
+  deltaZ = -deltaZ;
   vector<double> normal;
   normal.push_back(deltaX);
   normal.push_back(deltaY);
