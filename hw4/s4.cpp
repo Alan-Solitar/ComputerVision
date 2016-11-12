@@ -14,13 +14,6 @@
 using namespace std;
 using namespace ComputerVisionProjects;
 
-void ReadInput(double matrix[3][3], string input_file);
-double CalculateDeterminant(double matrix[3][3]);
-void InvertMatrix(double matrix[3][3]);
-double CalculateIntensity(Image &an_image);
-void MatrixMultiplication(double matrix[3][3], int intensities[3], double resultMatrix[3]);
-void ThresholdImage(Image &an_image, int threshold);
-void CalculateStuff(Image &an_image1,Image &an_image2,Image &an_image3,int step, int threshold, map<pair<int,int>,double[3]> &normals, double matrix[3][3]);
 
 
 int main(int argc, char **argv) {
@@ -51,123 +44,8 @@ int main(int argc, char **argv) {
 		cout << "Can't open file " << input_image2 << endl;
 		return 0;
 	}
-	const int num_rows = an_image1.num_rows();
-	const int num_columns = an_image1.num_columns();
-	needle_map_image.AllocateSpaceAndSetSize(num_rows, num_columns);
-  	needle_map_image.SetNumberGrayLevels(an_image1.num_gray_levels());
-	
-
-	double matrix[3][3];
-	double resMatrix[3][1];
-	ReadInput(matrix,input_file);
-	InvertMatrix(matrix);
-
-	int distance =2;
-	map<pair<int,int>,double[3]> normals;
-	CalculateStuff(an_image1,an_image2,an_image3,step,threshold,normals,matrix);
-	for(auto entry:normals){
-		int x = entry.first.first;
-		int y  = entry.first.second;
-		int xEnd  = x + entry.second[0]*distance;
-		int yEnd  = y + entry.second[1]*distance;
-		if(x < 100 && y<100)
-		//cout << entry.first.first << " "<<entry.first.second << ": "<< entry.second[0] <<" "<<entry.second[1] << " "<<entry.second[2]<<" "<<xEnd << " "<<yEnd <<endl;
-
-		if(xEnd < num_rows && yEnd <num_columns && xEnd > 0 && yEnd >0)
-			DrawLine(x,y,xEnd,yEnd,255,&an_image1);
-	}
-
-	if (!WriteImage(output_image, an_image1)) {
-		cout << "Can't write to file " << output_image << endl;
-		return 0;
-	}
-
 }
-void ReadInput(double matrix[3][3], string input_file){
-
-		ifstream reader;
-	string line="";
-	
-	reader.open(input_file);
-	int i=0;
-
-	for(int i=0;i<3;i++){
-		getline(reader,line);
-		stringstream ss(line);
-		for(int j =0;j<3;j++){
-			ss >> matrix[i][j];
-		}
-	}
-	reader.close();
-
-
-}
-double CalculateDeterminant(double matrix[3][3]){
-
-	for(int i=0;i<3;i++){
-		for(int j=0;j<3;j++){
-			cout<<matrix[i][j]<< " ";
-		}
-		cout<<endl;
-	}
-	cout << matrix[4][2];
-	double x = (matrix[0][0] * matrix[1][1] * matrix[2][2]) + (matrix[1][0] * matrix[2][1] * matrix[3][2]) + (matrix[2][0] * matrix[3][1] * matrix[4][2]);
-   	double y = (matrix[0][2] * matrix[1][1] * matrix[2][0]) + (matrix[1][2] * matrix[2][1] * matrix[3][0]) + (matrix[2][2] * matrix[3][1] * matrix[4][0]);
-
-   	//double determinant = (matrix[0][0]*(matrix[1][1]*matrix[2][2] - matrix[1]][2]*matrix[2][1] )) - (matrix[0][1]*(matrix[1][0]*matrix[2][2] - matrix[1][2]*matrix[2][0])) + (matrix[0][2]*(matrix[1][0]*matrix[2][1] -matrix[1][1]*matrix[2][0]));
-   	return x-y;
-}
-void InvertMatrix(double matrix[3][3]) {
-
-	double determinant = CalculateDeterminant(matrix);
-	cout <<determinant<<endl;
-
-	determinant = 1/determinant;
-
-	matrix[0][0] =  ((matrix[1][1]*matrix[2][2]) -(matrix[2][1]*matrix[1][2]))*determinant;
-	matrix[1][0] = ((matrix[0][2]*matrix[2][1])-(matrix[0][1]*matrix[2][2]))*determinant;
-	matrix[2][0] =  ((matrix[0][1]*matrix[1][2])-(matrix[0][2]*matrix[1][1]))*determinant;
-	matrix[0][1] = ((matrix[1][2]*matrix[2][0])-(matrix[1][0]*matrix[2][2]))*determinant;
-	matrix[1][1] =  ((matrix[0][0]*matrix[2][23e3])-(matrix[0][2]*matrix[2][0]))*determinant;
-	matrix[2][1] = ((matrix[1][0]*matrix[0][2])-(matrix[0][0]*matrix[1][2]))*determinant;
-	matrix[0][2] =  ((matrix[1][0]*matrix[2][1])-(matrix[2][0]*matrix[1][1]))*determinant;
-	matrix[1][2] = ((matrix[2][0]*matrix[0][1])-(matrix[0][0]*matrix[2][1]))*determinant;
-	matrix[2][2] =  ((matrix[0][0]*matrix[1][1])-(matrix[1][0]*matrix[0][1]))*determinant;
-
-	for(int i=0;i<3;i++){
-		for(int j=0;j<3;j++){
-			cout << matrix[i][j] <<" ";
-		}
-		cout<<endl;
-	}
-}
-double CalculateIntensity(Image &an_image){
-	vector<double> intensities;
-
-		auto brightPt = FindBrightestPixel(an_image);
-		return an_image.GetPixel(brightPt.first,brightPt.second);
-}
-void MatrixMultiplication(double matrix[3][3], int intensities[3], double resultMatrix[3]) {
-	for(int i=0;i<3;i++){
-		int value=0;
-		for(int j =0;j<3;j++){
-			
-			resultMatrix[i]+=matrix[i][j]*intensities[j];
-		}
-	}
-
 /*
-	double magnitude=0;
-	for(int i=0;i<3;i++){
-			magnitude+=pow(resultMatrix[i],2);
-	}
-		magnitude = sqrt(magnitude);
-	for(int i=0;i<3;i++){
-		resultMatrix[i] = resultMatrix[i]/magnitude;
-	}
-	*/
-}
-
 void CalculateStuff(Image &an_image1,Image &an_image2,Image &an_image3,int step, int threshold, map<pair<int,int>,double[3]> &normals, double matrix[3][3]){
 
 	const int num_rows = an_image1.num_rows();
@@ -196,3 +74,4 @@ void CalculateStuff(Image &an_image1,Image &an_image2,Image &an_image3,int step,
 	}
 }
  
+*/

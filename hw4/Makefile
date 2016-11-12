@@ -68,19 +68,15 @@ all:
 	make $(PROGRAM_3)
 
 runs1: 	
-		./$(PROGRAM_0) sphere0.pgm 110 s1output.txt
+		./$(PROGRAM_0) sphere0.pgm 110 parameters.txt
 runs2: 	
-		./$(PROGRAM_1) s1output.txt sphere1.pgm sphere2.pgm sphere3.pgm s2output.txt
+		./$(PROGRAM_1) parameters.txt sphere1.pgm sphere2.pgm sphere3.pgm directions.txt
 
 runs3: 	
-		./$(PROGRAM_2) s2output.txt object1.pgm object2.pgm object3.pgm 5 70  s3output.pgm
+		./$(PROGRAM_2) directions.txt object1.pgm object2.pgm object3.pgm 30 150  s3output.pgm
 
-runs3b: 	
-		./$(PROGRAM_2) s2outputb.pgm s3outputb.pgm votingarrayb.txt
-runs3c: 	
-		./$(PROGRAM_2) s2outputc.pgm s3outputc.pgm votingarrayc.txt
-runs4a: 	
-		./$(PROGRAM_3) hough_simple_1.pgm votingarraya.txt 350 s4outputa.pgm
+runs4:
+		./$(PROGRAM_3) directions.txt object1.pgm object2.pgm object3.pgm 70  s4output.pgm
 runs4b: 	
 		./$(PROGRAM_3) hough_simple_2.pgm votingarrayb.txt 200 s4outputb.pgm
 runs4c: 	
